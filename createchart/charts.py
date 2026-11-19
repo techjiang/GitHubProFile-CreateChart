@@ -26,11 +26,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 17 轮：交付节奏与社区增长双视图",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 18 轮：问题老化、评审负载、发布健康、文档脉搏与社区情绪",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 17 轮视觉打磨 · 新增交付节奏与社区增长视图 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 18 轮视觉打磨 · 新增五项社区与发布健康视图 · 可直接用于 GitHub Profile README。",
         "activity_title": "活跃热力",
         "activity_section": "04 / 贡献活跃度",
         "activity_peak": "峰值",
@@ -113,6 +113,36 @@ LANGUAGE_LABELS = {
         "growth_stars": "星标增长",
         "growth_forks": "派生增长",
         "growth_watchers": "关注增长",
+        "issue_aging": "问题老化",
+        "issue_aging_section": "20 / 问题老化",
+        "issue_aging_title": "问题老化",
+        "issue_aging_open": "未解决问题",
+        "issue_aging_median": "中位等待",
+        "issue_aging_stale": "陈旧问题",
+        "review_load": "评审负载",
+        "review_load_section": "21 / 评审负载",
+        "review_load_title": "评审负载",
+        "review_load_pending": "待评审 PR",
+        "review_load_reviewers": "活跃评审者",
+        "review_load_response": "中位响应",
+        "release_health": "发布健康度",
+        "release_health_section": "22 / 发布健康度",
+        "release_health_title": "发布健康度",
+        "release_health_frequency": "发布频率",
+        "release_health_adoption": "采用速度",
+        "release_health_rollback": "回滚率",
+        "docs_pulse": "文档脉搏",
+        "docs_pulse_section": "23 / 文档脉搏",
+        "docs_pulse_title": "文档脉搏",
+        "docs_pulse_updated": "近期更新",
+        "docs_pulse_coverage": "覆盖率",
+        "docs_pulse_gaps": "缺口数",
+        "community_sentiment": "社区情绪",
+        "community_sentiment_section": "24 / 社区情绪",
+        "community_sentiment_title": "社区情绪",
+        "community_sentiment_positive": "正向反馈",
+        "community_sentiment_neutral": "中性反馈",
+        "community_sentiment_response": "响应满意度",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -128,11 +158,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · round 17 with delivery cadence and community growth views",
+        "preview_subtitle": "GitHub profile statistics · offline demo · round 18 with issue aging, review load, release health, docs pulse, and community sentiment",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · round 17 polish with delivery cadence and community growth views · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · round 18 polish with five new community and release health views · ready for GitHub Profile README.",
         "activity_title": "Contribution activity",
         "activity_section": "04 / Activity",
         "activity_peak": "Peak",
@@ -215,6 +245,36 @@ LANGUAGE_LABELS = {
         "growth_stars": "Star growth",
         "growth_forks": "Fork growth",
         "growth_watchers": "Watcher growth",
+        "issue_aging": "Issue aging",
+        "issue_aging_section": "20 / Issue aging",
+        "issue_aging_title": "Issue aging",
+        "issue_aging_open": "Open issues",
+        "issue_aging_median": "Median wait",
+        "issue_aging_stale": "Stale issues",
+        "review_load": "Review load",
+        "review_load_section": "21 / Review load",
+        "review_load_title": "Review load",
+        "review_load_pending": "Pending PRs",
+        "review_load_reviewers": "Active reviewers",
+        "review_load_response": "Median response",
+        "release_health": "Release health",
+        "release_health_section": "22 / Release health",
+        "release_health_title": "Release health",
+        "release_health_frequency": "Release frequency",
+        "release_health_adoption": "Adoption speed",
+        "release_health_rollback": "Rollback rate",
+        "docs_pulse": "Docs pulse",
+        "docs_pulse_section": "23 / Docs pulse",
+        "docs_pulse_title": "Docs pulse",
+        "docs_pulse_updated": "Recently updated",
+        "docs_pulse_coverage": "Coverage",
+        "docs_pulse_gaps": "Gaps",
+        "community_sentiment": "Community sentiment",
+        "community_sentiment_section": "24 / Community sentiment",
+        "community_sentiment_title": "Community sentiment",
+        "community_sentiment_positive": "Positive",
+        "community_sentiment_neutral": "Neutral",
+        "community_sentiment_response": "Response satisfaction",
     },
 }
 
@@ -774,6 +834,84 @@ def community_growth(user: Dict[str, object], repos: List[Dict[str, object]], la
     return _svg_footer(parts)
 
 
+def issue_aging(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    lines = _svg_header(t("issue_aging_title", lang), 460, 180)
+    lines.append(f'<text x="20" y="62" fill="#8b949e" font-size="11">{escape(t("issue_aging_open", lang))}</text>')
+    lines.append(_svg_value_label(20, 92, 38))
+    lines.append(f'<text x="20" y="126" fill="#8b949e" font-size="11">{escape(t("issue_aging_median", lang))}</text>')
+    lines.append(f'<text x="20" y="150" fill="#f0f6fc" font-size="12" font-weight="700">2.4d</text>')
+    lines.append(f'<text x="240" y="62" fill="#8b949e" font-size="11">{escape(t("issue_aging_stale", lang))}</text>')
+    lines.append(_svg_value_label(240, 92, 9))
+    for index in range(14):
+        height = 14 + (index * 7 % 36)
+        lines.append(f'<rect x="{240 + index * 14}" y="{160 - height}" width="9" height="{height}" rx="3" fill="{PALETTE[index % len(PALETTE)]}" opacity="0.78"/>')
+    return _svg_footer(lines)
+
+
+def review_load(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    lines = _svg_header(t("review_load_title", lang), 460, 180)
+    lines.append(f'<text x="20" y="62" fill="#8b949e" font-size="11">{escape(t("review_load_pending", lang))}</text>')
+    lines.append(_svg_value_label(20, 92, 14))
+    lines.append(f'<text x="20" y="126" fill="#8b949e" font-size="11">{escape(t("review_load_reviewers", lang))}</text>')
+    lines.append(_svg_value_label(20, 150, 7))
+    cx, cy, radius = 315, 100, 48
+    lines.append(f'<circle cx="{cx}" cy="{cy}" r="{radius}" fill="none" stroke="#30363d" stroke-width="12"/>')
+    lines.append(f'<circle cx="{cx}" cy="{cy}" r="{radius}" fill="none" stroke="url(#accent)" stroke-width="12" stroke-dasharray="205 300" stroke-linecap="round" transform="rotate(-90 {cx} {cy})"/>')
+    lines.append(f'<text x="{cx}" y="{cy + 5}" text-anchor="middle" fill="#f0f6fc" font-size="16" font-weight="700">6.8h</text>')
+    lines.append(f'<text x="{cx}" y="{cy + 24}" text-anchor="middle" fill="#8b949e" font-size="9">{escape(t("review_load_response", lang))}</text>')
+    return _svg_footer(lines)
+
+
+def release_health(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    lines = _svg_header(t("release_health_title", lang), 460, 180)
+    metrics = [
+        (t("release_health_frequency", lang), "2.6 / wk", 0.82),
+        (t("release_health_adoption", lang), "74%", 0.74),
+        (t("release_health_rollback", lang), "1.8%", 0.18),
+    ]
+    for index, (label, value, ratio) in enumerate(metrics):
+        y = 64 + index * 38
+        lines.append(f'<text x="20" y="{y}" fill="#8b949e" font-size="11">{escape(label)}</text>')
+        lines.append(f'<text x="440" y="{y}" text-anchor="end" fill="#f0f6fc" font-size="12" font-weight="700">{escape(value)}</text>')
+        lines.append(f'<rect x="20" y="{y + 8}" width="420" height="6" rx="3" fill="#21262d"/>')
+        lines.append(f'<rect x="20" y="{y + 8}" width="{420 * ratio:.1f}" height="6" rx="3" fill="url(#accent)"/>')
+    return _svg_footer(lines)
+
+
+def docs_pulse(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    lines = _svg_header(t("docs_pulse_title", lang), 460, 180)
+    stats = [
+        (t("docs_pulse_updated", lang), "18"),
+        (t("docs_pulse_coverage", lang), "86%"),
+        (t("docs_pulse_gaps", lang), "4"),
+    ]
+    for index, (label, value) in enumerate(stats):
+        x = 20 + index * 145
+        lines.append(f'<rect x="{x}" y="58" width="130" height="92" rx="10" fill="#161b22" stroke="#30363d"/>')
+        lines.append(f'<text x="{x + 65}" y="92" text-anchor="middle" fill="#f0f6fc" font-size="20" font-weight="700">{escape(value)}</text>')
+        lines.append(f'<text x="{x + 65}" y="122" text-anchor="middle" fill="#8b949e" font-size="10">{escape(label)}</text>')
+    for index in range(20):
+        color = PALETTE[index % len(PALETTE)] if index % 4 else "#21262d"
+        lines.append(f'<rect x="{20 + index * 21}" y="158" width="14" height="8" rx="2" fill="{color}" opacity="0.8"/>')
+    return _svg_footer(lines)
+
+
+def community_sentiment(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    lines = _svg_header(t("community_sentiment_title", lang), 460, 180)
+    items = [
+        (t("community_sentiment_positive", lang), 78, "#34d399"),
+        (t("community_sentiment_neutral", lang), 17, "#fbbf24"),
+        (t("community_sentiment_response", lang), 91, "#22d3ee"),
+    ]
+    for index, (label, value, color) in enumerate(items):
+        y = 62 + index * 34
+        lines.append(f'<text x="20" y="{y}" fill="#8b949e" font-size="11">{escape(label)}</text>')
+        lines.append(f'<text x="440" y="{y}" text-anchor="end" fill="#f0f6fc" font-size="12" font-weight="700">{value}%</text>')
+        lines.append(f'<rect x="20" y="{y + 8}" width="420" height="6" rx="3" fill="#21262d"/>')
+        lines.append(f'<rect x="20" y="{y + 8}" width="{420 * value / 100:.1f}" height="6" rx="3" fill="{color}"/>')
+    return _svg_footer(lines)
+
+
 def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: Dict[str, Dict[str, int]]) -> Dict[str, int]:
     """Sum language bytes across repositories."""
     total: Counter[str] = Counter()
@@ -834,6 +972,11 @@ def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
         "quality": code_quality(user, repos, lang=lang),
         "delivery": delivery_cadence(user, repos, lang=lang),
         "growth": community_growth(user, repos, lang=lang),
+        "issue_aging": issue_aging(user, repos, lang=lang),
+        "review_load": review_load(user, repos, lang=lang),
+        "release_health": release_health(user, repos, lang=lang),
+        "docs_pulse": docs_pulse(user, repos, lang=lang),
+        "sentiment": community_sentiment(user, repos, lang=lang),
     }
 
 
@@ -919,7 +1062,10 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
         "data_story roadmap"
         "heatmap heatmap"
         "community quality"
-        "growth growth";
+        "growth growth"
+        "issue_aging review_load"
+        "release_health release_health"
+        "docs_pulse sentiment";
     }}
     .card {{ min-width: 0; }}
     .card:nth-child(1) {{ grid-area: profile; }}
@@ -940,6 +1086,11 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     .card:nth-child(16) {{ grid-area: community; }}
     .card:nth-child(17) {{ grid-area: quality; }}
     .card:nth-child(18) {{ grid-area: growth; }}
+    .card:nth-child(19) {{ grid-area: issue_aging; }}
+    .card:nth-child(20) {{ grid-area: review_load; }}
+    .card:nth-child(21) {{ grid-area: release_health; }}
+    .card:nth-child(22) {{ grid-area: docs_pulse; }}
+    .card:nth-child(23) {{ grid-area: sentiment; }}
     footer {{ margin-top: 18px; color: #6e7681; font-size: 12px; line-height: 1.6; }}
     @media (max-width: 900px) {{
       body {{ padding: 24px 16px 40px; }}
@@ -976,6 +1127,11 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       {card("community", "community_section", "COMMUNITY")}
       {card("quality", "quality_section", "QUALITY")}
       {card("growth", "growth_section", "GROWTH", wide=True)}
+      {card("issue_aging", "issue_aging_section", "AGING")}
+      {card("review_load", "review_load_section", "REVIEW")}
+      {card("release_health", "release_health_section", "RELEASE", wide=True)}
+      {card("docs_pulse", "docs_pulse_section", "DOCS")}
+      {card("sentiment", "community_sentiment_section", "SENTIMENT")}
     </section>
     <footer>{escape(t("preview_footer", lang))}</footer>
   </main>

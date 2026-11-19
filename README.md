@@ -13,7 +13,7 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Offline demo mode for previewing charts without GitHub API calls
 - Chinese and English labels via `--lang zh` / `--lang en`
 - Refined typography, spacing, card hover states, status badges and title dividers
-- Seventeen focused visual polish rounds with advanced insight cards, release/cadence views, language composition, repository health, collaboration network, data storytelling, annual heatmap, milestones, roadmap, community pulse, code quality, delivery cadence, community growth, and zh/en preview copy updates
+- Eighteen focused visual polish rounds with advanced insight cards, release/cadence views, language composition, repository health, collaboration network, data storytelling, annual heatmap, milestones, roadmap, community pulse, code quality, delivery cadence, community growth, issue aging, review load, release health, docs pulse, community sentiment, and zh/en preview copy updates
 
 ## Install
 
@@ -49,6 +49,11 @@ Generated files:
 - `charts/quality.svg`
 - `charts/delivery.svg`
 - `charts/growth.svg`
+- `charts/issue_aging.svg`
+- `charts/review_load.svg`
+- `charts/release_health.svg`
+- `charts/docs_pulse.svg`
+- `charts/sentiment.svg`
 
 Embed in your profile README:
 
@@ -64,7 +69,7 @@ createchart octocat --repo-languages
 
 ## Preview
 
-Run the offline demo to generate nineteen sample charts and a standalone preview page:
+Run the offline demo to generate twenty-four sample charts and a standalone preview page:
 
 ```bash
 createchart --demo --preview-html -o charts

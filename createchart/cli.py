@@ -24,6 +24,11 @@ from .charts import (
     code_quality,
     delivery_cadence,
     community_growth,
+    community_sentiment,
+    docs_pulse,
+    issue_aging,
+    release_health,
+    review_load,
     language_mix,
     preview_html,
     repo_health,
@@ -109,8 +114,13 @@ def main(argv: list[str] | None = None) -> int:
     (output / "quality.svg").write_text(code_quality(user, repos, lang=args.lang), encoding="utf-8")
     (output / "delivery.svg").write_text(delivery_cadence(user, repos, lang=args.lang), encoding="utf-8")
     (output / "growth.svg").write_text(community_growth(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "issue_aging.svg").write_text(issue_aging(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "review_load.svg").write_text(review_load(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "release_health.svg").write_text(release_health(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "docs_pulse.svg").write_text(docs_pulse(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "sentiment.svg").write_text(community_sentiment(user, repos, lang=args.lang), encoding="utf-8")
 
-    print(f"Wrote 19 charts to {output.resolve()}")
+    print(f"Wrote 24 charts to {output.resolve()}")
     return 0
 
 
