@@ -26,11 +26,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 连续五轮视觉优化",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 本轮聚焦细节与可读性",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 可直接用于 GitHub Profile README。",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -46,11 +46,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · five more rounds of visual polish",
+        "preview_subtitle": "GitHub profile statistics · offline demo · another pass on clarity and detail",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · ready for GitHub Profile README.",
     },
 }
 
@@ -80,8 +80,8 @@ def _svg_header(title: str, width: int, height: int) -> List[str]:
         f'<rect width="{width}" height="{height}" fill="url(#bg)" rx="12"/>',
         f'<rect x="0" y="0" width="4" height="{height}" fill="url(#accent)" rx="2"/>',
         f'<rect x="0" y="0" width="{width}" height="1" fill="#ffffff" opacity="0.06"/>',
-        f'<text x="16" y="28" fill="#e6edf3" font-family="sans-serif" font-size="15" font-weight="700" letter-spacing="0.2">{escape(title)}</text>',
-        f'<line x1="16" y1="36" x2="{width - 16}" y2="36" stroke="#ffffff" stroke-opacity="0.08"/>',
+        f'<text x="18" y="29" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" letter-spacing="0.3">{escape(title)}</text>',
+        f'<line x1="18" y1="38" x2="{width - 18}" y2="38" stroke="url(#accent)" stroke-opacity="0.55"/>',
     ]
 
 
@@ -95,7 +95,7 @@ def language_chart(languages: Dict[str, int], title: str | None = None, lang: st
     total = sum(v for v in languages.values() if v > 0)
     parts = _svg_header(title or t("languages_title", lang), 520, 120)
     if total == 0:
-        parts.append(f'<text x="16" y="64" fill="#8b949e" font-family="sans-serif" font-size="13">{escape(t("no_language_data", lang))}</text>')
+        parts.append(f'<text x="18" y="66" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">{escape(t("no_language_data", lang))}</text>')
         return _svg_footer(parts)
 
     x = 16.0
@@ -120,7 +120,7 @@ def language_chart(languages: Dict[str, int], title: str | None = None, lang: st
         pct = 100 * value / total
         label = f"{lang} {pct:.1f}%"
         parts.append(f'<rect x="{legend_x:.2f}" y="{legend_y - 10}" width="10" height="10" rx="2" fill="{color}"/>')
-        parts.append(f'<text x="{legend_x + 16:.2f}" y="{legend_y}" fill="#e6edf3" font-family="sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">{pct:.1f}%</tspan> {escape(lang)}</text>')
+        parts.append(f'<text x="{legend_x + 16:.2f}" y="{legend_y}" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">{pct:.1f}%</tspan> {escape(lang)}</text>')
         legend_x += 20 + len(label) * 7
     return _svg_footer(parts)
 
@@ -147,7 +147,7 @@ def repo_bars(
     height = max(100, 60 + row_height * len(ranked))
     parts = _svg_header(title or t("repos_title", lang), width, height)
     if not ranked:
-        parts.append(f'<text x="16" y="64" fill="#8b949e" font-family="sans-serif" font-size="13">{escape(t("no_repositories", lang))}</text>')
+        parts.append(f'<text x="18" y="66" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">{escape(t("no_repositories", lang))}</text>')
         return _svg_footer(parts)
 
     max_value = max(value for _, value in ranked) or 1
@@ -157,10 +157,10 @@ def repo_bars(
         bar = bar_max * value / max_value
         rank_color = PALETTE[idx % len(PALETTE)]
         parts.append(f'<circle cx="28" cy="{y + 8}" r="9" fill="{rank_color}" fill-opacity="0.18" stroke="{rank_color}" stroke-opacity="0.5"/>')
-        parts.append(f'<text x="28" y="{y + 12}" text-anchor="middle" fill="#e6edf3" font-family="sans-serif" font-size="10" font-weight="700">{idx + 1}</text>')
-        parts.append(f'<text x="44" y="{y + 14}" fill="#c9d1d9" font-family="sans-serif" font-size="12">{escape(name)}</text>')
+        parts.append(f'<text x="28" y="{y + 12}" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">{idx + 1}</text>')
+        parts.append(f'<text x="44" y="{y + 14}" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">{escape(name)}</text>')
         parts.append(f'<rect x="180" y="{y}" width="{bar:.2f}" height="16" rx="3" fill="url(#accent)"><title>{escape(name)}: {value}</title></rect>')
-        parts.append(f'<text x="{190 + bar:.2f}" y="{y + 14}" fill="#8b949e" font-family="sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum">{value:,}</text>')
+        parts.append(f'<text x="{190 + bar:.2f}" y="{y + 14}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum">{value:,}</text>')
     return _svg_footer(parts)
 
 
@@ -187,10 +187,10 @@ def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]],
     ]
     for idx, (label, value) in enumerate(stats):
         x = 16 + (idx % 2) * 252
-        y = 62 + (idx // 2) * 52
-        lines.append(f'<text x="{x}" y="{y}" fill="#a5b4fc" font-family="sans-serif" font-size="11" font-weight="700" letter-spacing="1">{escape(label)}</text>')
-        lines.append(f'<rect x="{x}" y="{y + 8}" width="220" height="34" rx="7" fill="#161b22" stroke="#30363d"/>')
-        lines.append(f'<text x="{x + 12}" y="{y + 31}" fill="#e6edf3" font-family="sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum">{value}</text>')
+        y = 60 + (idx // 2) * 62
+        lines.append(f'<text x="{x}" y="{y}" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">{escape(label)}</text>')
+        lines.append(f'<rect x="{x}" y="{y + 6}" width="220" height="32" rx="7" fill="#161b22" stroke="#30363d"/>')
+        lines.append(f'<text x="{x + 12}" y="{y + 29}" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum">{value}</text>')
     return _svg_footer(lines)
 
 
@@ -281,7 +281,7 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }}
     .card {{
       position: relative; padding: 20px;
-      border: 1px solid #30363d; border-radius: 16px;
+      border: 1px solid #30363d; border-radius: 16px; transition: border-color .2s ease, transform .2s ease;
       background: linear-gradient(145deg, rgba(22, 27, 34, .95), rgba(13, 17, 23, .88));
       box-shadow: 0 20px 45px rgba(0, 0, 0, .3);
       overflow: hidden;
@@ -292,11 +292,13 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     }}
     .card .section-label {{
       display: block; margin: 0 0 12px; color: #6e7681;
-      font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+      font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
     }}
     .card:first-child {{ grid-column: 1 / -1; }}
     .card svg {{ display: block; width: 100%; height: auto; }}
-    footer {{ margin-top: 22px; color: #6e7681; font-size: 12px; }}
+    .card:hover {{ border-color: rgba(99, 102, 241, .55); transform: translateY(-2px); }}
+    .card svg text {{ paint-order: stroke; }}
+    footer {{ margin-top: 22px; color: #6e7681; font-size: 12px; line-height: 1.6; }}
     @media (max-width: 900px) {{
       body {{ padding: 24px 16px 40px; }}
       h1 {{ font-size: 28px; }}
