@@ -15,7 +15,7 @@ class GitHubClient:
         self.session = requests.Session()
         headers = {
             "Accept": "application/vnd.github+json",
-            "User-Agent": "CreateChart/0.1",
+            "User-Agent": "CreateChart/0.2",
         }
         if token:
             headers["Authorization"] = f"Bearer {token}"
