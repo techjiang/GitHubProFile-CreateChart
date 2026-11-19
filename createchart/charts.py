@@ -15,7 +15,18 @@ PALETTE = [
 def _svg_header(title: str, width: int, height: int) -> List[str]:
     return [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="{escape(title)}">',
-        '<rect width="100%" height="100%" fill="#0d1117" rx="12"/>',
+        '<defs>',
+        '<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">',
+        '<stop offset="0%" stop-color="#111827"/>',
+        '<stop offset="100%" stop-color="#0d1117"/>',
+        '</linearGradient>',
+        '<linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">',
+        '<stop offset="0%" stop-color="#6366f1"/>',
+        '<stop offset="100%" stop-color="#06b6d4"/>',
+        '</linearGradient>',
+        '</defs>',
+        f'<rect width="{width}" height="{height}" fill="url(#bg)" rx="12"/>',
+        f'<rect x="0" y="0" width="4" height="{height}" fill="url(#accent)" rx="2"/>',
         f'<text x="16" y="28" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="700">{escape(title)}</text>',
     ]
 
@@ -40,7 +51,7 @@ def language_chart(languages: Dict[str, int], title: str = "Languages") -> str:
             continue
         segment = bar_width * value / total
         color = PALETTE[idx % len(PALETTE)]
-        parts.append(f'<rect x="{x:.2f}" y="44" width="{segment:.2f}" height="18" fill="{color}"><title>{escape(lang)}: {value} bytes</title></rect>')
+        parts.append(f'<rect x="{x:.2f}" y="44" width="{segment:.2f}" height="18" rx="3" fill="{color}"><title>{escape(lang)}: {value} bytes</title></rect>')
         x += segment
 
     legend_x = 16.0
@@ -83,7 +94,7 @@ def repo_bars(repos: Iterable[Dict[str, object]], metric: str = "stargazers_coun
         y = 48 + idx * row_height
         bar = bar_max * value / max_value
         parts.append(f'<text x="16" y="{y + 14}" fill="#c9d1d9" font-family="sans-serif" font-size="12">{escape(name)}</text>')
-        parts.append(f'<rect x="180" y="{y}" width="{bar:.2f}" height="16" rx="3" fill="{PALETTE[idx % len(PALETTE)]}"><title>{escape(name)}: {value}</title></rect>')
+        parts.append(f'<rect x="180" y="{y}" width="{bar:.2f}" height="16" rx="3" fill="url(#accent)"><title>{escape(name)}: {value}</title></rect>')
         parts.append(f'<text x="{190 + bar:.2f}" y="{y + 14}" fill="#8b949e" font-family="sans-serif" font-size="11">{value}</text>')
     return _svg_footer(parts)
 
@@ -113,7 +124,8 @@ def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]])
         x = 16 + (idx % 2) * 252
         y = 62 + (idx // 2) * 52
         lines.append(f'<text x="{x}" y="{y}" fill="#8b949e" font-family="sans-serif" font-size="12">{escape(label)}</text>')
-        lines.append(f'<text x="{x}" y="{y + 26}" fill="#e6edf3" font-family="sans-serif" font-size="24" font-weight="700">{value}</text>')
+        lines.append(f'<rect x="{x}" y="{y + 8}" width="220" height="34" rx="7" fill="#161b22" stroke="#30363d"/>')
+        lines.append(f'<text x="{x + 12}" y="{y + 31}" fill="#e6edf3" font-family="sans-serif" font-size="24" font-weight="700">{value}</text>')
     return _svg_footer(lines)
 
 
@@ -126,3 +138,28 @@ def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: D
             if isinstance(value, int) and value > 0:
                 total[lang] += value
     return dict(total)
+
+
+
+def demo_charts() -> Dict[str, str]:
+    """Build sample charts for local preview without network access."""
+    user = {
+        "login": "octocat",
+        "name": "The Octocat",
+        "followers": 12840,
+        "following": 92,
+        "public_repos": 42,
+    }
+    repos = [
+        {"name": "hello-world", "stargazers_count": 5820},
+        {"name": "linguist", "stargazers_count": 4310},
+        {"name": "hub", "stargazers_count": 3140},
+        {"name": "gitignore", "stargazers_count": 2680},
+        {"name": "git-consortium", "stargazers_count": 1490},
+    ]
+    languages = {"Python": 182000, "TypeScript": 96500, "Go": 54300, "Rust": 32100, "Shell": 12400}
+    return {
+        "profile": profile_summary(user, repos),
+        "repos": repo_bars(repos),
+        "languages": language_chart(languages, title="Language distribution"),
+    }

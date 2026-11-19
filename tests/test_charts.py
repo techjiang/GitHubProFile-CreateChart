@@ -35,3 +35,11 @@ def test_aggregate_languages():
     )
     assert result["Python"] == 15
     assert result["Go"] == 2
+
+
+def test_demo_charts_returns_three_svg_files():
+    from createchart.charts import demo_charts
+
+    charts = demo_charts()
+    assert set(charts) == {"profile", "repos", "languages"}
+    assert all(svg.startswith("<svg") and svg.endswith("</svg>") for svg in charts.values())

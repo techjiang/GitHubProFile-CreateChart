@@ -8,13 +8,14 @@ import sys
 from pathlib import Path
 from typing import Dict
 
-from .charts import aggregate_languages, language_chart, profile_summary, repo_bars
+from .charts import aggregate_languages, demo_charts, language_chart, profile_summary, repo_bars
 from .github_client import GitHubClient
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="createchart", description="Generate GitHub statistic SVG charts")
-    parser.add_argument("username", help="GitHub username")
+    parser.add_argument("username", nargs="?", help="GitHub username (omit with --demo)")
+    parser.add_argument("--demo", action="store_true", help="Generate local demo charts without GitHub API")
     parser.add_argument("-o", "--output-dir", default="charts", help="Directory to write SVG files")
     parser.add_argument("--token", default=os.environ.get("GITHUB_TOKEN"), help="GitHub token (or set GITHUB_TOKEN)")
     parser.add_argument("--metric", default="stargazers_count", help="Repo ranking metric (e.g. stargazers_count, forks_count)")
@@ -24,6 +25,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.demo:
+        output = Path(args.output_dir)
+        output.mkdir(parents=True, exist_ok=True)
+        for name, svg in demo_charts().items():
+            (output / f"{name}.svg").write_text(svg, encoding="utf-8")
+        print(f"Wrote 3 demo charts to {output.resolve()}")
+        return 0
+
+    if not args.username:
+        print("username is required unless --demo is used", file=sys.stderr)
+        return 2
+
     client = GitHubClient(token=args.token)
     try:
         user = client.get_user(args.username)
