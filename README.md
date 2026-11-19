@@ -12,7 +12,7 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Offline demo mode for previewing charts without GitHub API calls
 - Chinese and English labels via `--lang zh` / `--lang en`
 - Refined typography, spacing, card hover states and title dividers
-- Five focused visual polish rounds with zh/en preview copy updates
+- Six focused visual polish rounds with zh/en preview copy updates
 
 ## Install
 

@@ -25,7 +25,7 @@ def test_profile_summary_counts_stars():
     svg = profile_summary({"login": "octocat", "followers": 3}, [
         {"stargazers_count": 4}, {"stargazers_count": 6},
     ])
-    assert ">10</text>" in svg
+    assert ">10</tspan>" in svg
 
 
 def test_aggregate_languages():
@@ -69,7 +69,19 @@ def test_english_labels_remain_default():
 
 def test_preview_polish_rounds_are_visible():
     html = preview_html(demo_charts(lang="zh"), lang="zh")
-    assert "第 1 轮" in html
-    assert "第 5 轮收尾" in html
+    assert "第 6 轮" in html
+    assert "第 6 轮视觉打磨" in html
     assert "累计星标" in html
     assert "rgba(99, 102, 241, .72)" in html
+
+
+def test_preview_header_and_labels_are_polished():
+    html = preview_html(demo_charts(lang="zh"), lang="zh")
+    assert "h1::after" in html
+    assert "#8b949e" in html
+
+
+def test_profile_values_use_thousands_separator():
+    svg = demo_charts(lang="zh")["profile"]
+    assert "12,840" in svg
+    assert "19,060" in svg

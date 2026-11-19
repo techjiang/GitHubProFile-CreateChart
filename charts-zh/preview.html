@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CreateChart · 预览</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 40px 24px 56px;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(99, 102, 241, .28) 0, transparent 26%),
+        radial-gradient(circle at 92% 6%, rgba(6, 182, 212, .18) 0, transparent 24%),
+        linear-gradient(160deg, #111827 0%, #0b0f16 52%, #07090d 100%);
+      color: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { max-width: 1160px; margin: 0 auto; }
+    header { margin-bottom: 30px; padding: 0 4px 22px; border-bottom: 1px solid #30363d; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-bottom: 14px; padding: 5px 11px;
+      border: 1px solid rgba(99, 102, 241, .45); border-radius: 999px;
+      background: rgba(99, 102, 241, .12); color: #a5b4fc;
+      font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%;
+      background: #34d399; box-shadow: 0 0 0 4px rgba(52, 211, 153, .12);
+    }
+    h1 { margin: 0 0 8px; font-size: 34px; line-height: 1.12; letter-spacing: -.02em; }
+    h1::after { content: ""; display: block; width: 54px; height: 3px; margin-top: 14px; border-radius: 999px; background: linear-gradient(90deg, #6366f1, #06b6d4); }
+    .subtitle { color: #8b949e; font-size: 14px; line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+    .card {
+      position: relative; padding: 20px;
+      border: 1px solid #30363d; border-radius: 16px; transition: border-color .2s ease, transform .2s ease;
+      background: linear-gradient(145deg, rgba(22, 27, 34, .95), rgba(13, 17, 23, .88));
+      box-shadow: 0 20px 45px rgba(0, 0, 0, .3);
+      overflow: hidden;
+    }
+    .card::before {
+      content: ""; position: absolute; inset: 0 0 auto; height: 2px;
+      background: linear-gradient(90deg, #6366f1, #06b6d4, #10b981);
+    }
+    .card .section-label {
+      display: block; margin: 0 0 12px; color: #8b949e;
+      font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    }
+    .card:first-child { grid-column: 1 / -1; }
+    .card svg { display: block; width: 100%; height: auto; }
+    .card:hover { border-color: rgba(99, 102, 241, .72); box-shadow: 0 22px 52px rgba(0,0,0,.38), 0 0 0 1px rgba(99,102,241,.18); transform: translateY(-2px); }
+    .card svg text { paint-order: stroke; }
+    footer { margin-top: 22px; color: #6e7681; font-size: 12px; line-height: 1.6; }
+    @media (max-width: 900px) {
+      body { padding: 24px 16px 40px; }
+      h1 { font-size: 28px; }
+      .grid { grid-template-columns: 1fr; }
+      .card:first-child { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">实时 SVG 图表</div>
+      <h1>CreateChart 预览</h1>
+      <div class="subtitle">GitHub 主页统计 · 离线演示 · 第 6 轮：数值分层、标题强调与预览页稳定性打磨</div>
+    </header>
+    <section class="grid">
+      <div class="card"><span class="section-label">01 / 个人概览</span><svg xmlns="http://www.w3.org/2000/svg" width="520" height="170" viewBox="0 0 520 170" role="img" aria-label="The Octocat · GitHub 概览">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#111827"/>
+<stop offset="100%" stop-color="#0d1117"/>
+</linearGradient>
+<linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#6366f1"/>
+<stop offset="100%" stop-color="#06b6d4"/>
+</linearGradient>
+</defs>
+<rect width="520" height="170" fill="url(#bg)" rx="12"/>
+<rect x="0" y="0" width="4" height="170" fill="url(#accent)" rx="2"/>
+<rect x="0" y="0" width="520" height="1" fill="#ffffff" opacity="0.06"/>
+<text x="18" y="29" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" letter-spacing="0.3">The Octocat · GitHub 概览</text>
+<line x1="18" y1="38" x2="502" y2="38" stroke="url(#accent)" stroke-opacity="0.55"/>
+<text x="16" y="60" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">关注者</text>
+<rect x="16" y="66" width="220" height="32" rx="7" fill="#161b22" stroke="#30363d"/>
+<text x="28" y="89" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">12,840</tspan></text>
+<text x="268" y="60" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">正在关注</text>
+<rect x="268" y="66" width="220" height="32" rx="7" fill="#161b22" stroke="#30363d"/>
+<text x="280" y="89" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">92</tspan></text>
+<text x="16" y="122" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">公开仓库</text>
+<rect x="16" y="128" width="220" height="32" rx="7" fill="#161b22" stroke="#30363d"/>
+<text x="28" y="151" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">42</tspan></text>
+<text x="268" y="122" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">累计星标</text>
+<rect x="268" y="128" width="220" height="32" rx="7" fill="#161b22" stroke="#30363d"/>
+<text x="280" y="151" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">19,060</tspan></text>
+</svg></div>
+      <div class="card"><span class="section-label">02 / 仓库排行</span><svg xmlns="http://www.w3.org/2000/svg" width="560" height="270" viewBox="0 0 560 270" role="img" aria-label="热门仓库">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#111827"/>
+<stop offset="100%" stop-color="#0d1117"/>
+</linearGradient>
+<linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#6366f1"/>
+<stop offset="100%" stop-color="#06b6d4"/>
+</linearGradient>
+</defs>
+<rect width="560" height="270" fill="url(#bg)" rx="12"/>
+<rect x="0" y="0" width="4" height="270" fill="url(#accent)" rx="2"/>
+<rect x="0" y="0" width="560" height="1" fill="#ffffff" opacity="0.06"/>
+<text x="18" y="29" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" letter-spacing="0.3">热门仓库</text>
+<line x1="18" y1="38" x2="542" y2="38" stroke="url(#accent)" stroke-opacity="0.55"/>
+<circle cx="28" cy="56" r="9" fill="#6366f1" fill-opacity="0.18" stroke="#6366f1" stroke-opacity="0.5"/>
+<text x="28" y="60" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">1</text>
+<text x="44" y="62" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">hello-world</text>
+<rect x="180" y="48" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>
+<rect x="180" y="48" width="300.00" height="16" rx="3" fill="url(#accent)"><title>hello-world: 5820</title></rect>
+<text x="496.00" y="62.00" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">5,820</tspan></text>
+<circle cx="28" cy="86" r="9" fill="#22d3ee" fill-opacity="0.18" stroke="#22d3ee" stroke-opacity="0.5"/>
+<text x="28" y="90" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">2</text>
+<text x="44" y="92" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">linguist</text>
+<rect x="180" y="78" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>
+<rect x="180" y="78" width="222.16" height="16" rx="3" fill="url(#accent)"><title>linguist: 4310</title></rect>
+<text x="496.00" y="92.00" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">4,310</tspan></text>
+<circle cx="28" cy="116" r="9" fill="#34d399" fill-opacity="0.18" stroke="#34d399" stroke-opacity="0.5"/>
+<text x="28" y="120" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">3</text>
+<text x="44" y="122" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">hub</text>
+<rect x="180" y="108" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>
+<rect x="180" y="108" width="161.86" height="16" rx="3" fill="url(#accent)"><title>hub: 3140</title></rect>
+<text x="496.00" y="122.00" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">3,140</tspan></text>
+<circle cx="28" cy="146" r="9" fill="#fbbf24" fill-opacity="0.18" stroke="#fbbf24" stroke-opacity="0.5"/>
+<text x="28" y="150" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">4</text>
+<text x="44" y="152" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">gitignore</text>
+<rect x="180" y="138" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>
+<rect x="180" y="138" width="138.14" height="16" rx="3" fill="url(#accent)"><title>gitignore: 2680</title></rect>
+<text x="496.00" y="152.00" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">2,680</tspan></text>
+<circle cx="28" cy="176" r="9" fill="#fb7185" fill-opacity="0.18" stroke="#fb7185" stroke-opacity="0.5"/>
+<text x="28" y="180" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">5</text>
+<text x="44" y="182" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">git-consortium</text>
+<rect x="180" y="168" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>
+<rect x="180" y="168" width="76.80" height="16" rx="3" fill="url(#accent)"><title>git-consortium: 1490</title></rect>
+<text x="496.00" y="182.00" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">1,490</tspan></text>
+<circle cx="28" cy="206" r="9" fill="#a78bfa" fill-opacity="0.18" stroke="#a78bfa" stroke-opacity="0.5"/>
+<text x="28" y="210" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">6</text>
+<text x="44" y="212" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">createchart</text>
+<rect x="180" y="198" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>
+<rect x="180" y="198" width="50.52" height="16" rx="3" fill="url(#accent)"><title>createchart: 980</title></rect>
+<text x="496.00" y="212.00" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">980</tspan></text>
+<circle cx="28" cy="236" r="9" fill="#f472b6" fill-opacity="0.18" stroke="#f472b6" stroke-opacity="0.5"/>
+<text x="28" y="240" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">7</text>
+<text x="44" y="242" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">octokit.rb</text>
+<rect x="180" y="228" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>
+<rect x="180" y="228" width="32.99" height="16" rx="3" fill="url(#accent)"><title>octokit.rb: 640</title></rect>
+<text x="496.00" y="242.00" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum"><tspan fill="#ffffff">640</tspan></text>
+</svg></div>
+      <div class="card"><span class="section-label">03 / 语言分布</span><svg xmlns="http://www.w3.org/2000/svg" width="520" height="120" viewBox="0 0 520 120" role="img" aria-label="语言分布">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#111827"/>
+<stop offset="100%" stop-color="#0d1117"/>
+</linearGradient>
+<linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#6366f1"/>
+<stop offset="100%" stop-color="#06b6d4"/>
+</linearGradient>
+</defs>
+<rect width="520" height="120" fill="url(#bg)" rx="12"/>
+<rect x="0" y="0" width="4" height="120" fill="url(#accent)" rx="2"/>
+<rect x="0" y="0" width="520" height="1" fill="#ffffff" opacity="0.06"/>
+<text x="18" y="29" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" letter-spacing="0.3">语言分布</text>
+<line x1="18" y1="38" x2="502" y2="38" stroke="url(#accent)" stroke-opacity="0.55"/>
+<line x1="16.00" y1="42" x2="16.00" y2="64" stroke="#ffffff" stroke-opacity="0.07"/>
+<line x1="260.00" y1="42" x2="260.00" y2="64" stroke="#ffffff" stroke-opacity="0.07"/>
+<line x1="504.00" y1="42" x2="504.00" y2="64" stroke="#ffffff" stroke-opacity="0.07"/>
+<rect x="16.00" y="44" width="231.23" height="18" rx="3" fill="#6366f1" stroke="#0d1117" stroke-width="0.6"><title>Python: 182000 bytes</title></rect>
+<rect x="247.23" y="44" width="122.60" height="18" rx="3" fill="#22d3ee" stroke="#0d1117" stroke-width="0.6"><title>TypeScript: 96500 bytes</title></rect>
+<rect x="369.83" y="44" width="68.99" height="18" rx="3" fill="#34d399" stroke="#0d1117" stroke-width="0.6"><title>Go: 54300 bytes</title></rect>
+<rect x="438.82" y="44" width="40.78" height="18" rx="3" fill="#fbbf24" stroke="#0d1117" stroke-width="0.6"><title>Rust: 32100 bytes</title></rect>
+<rect x="479.61" y="44" width="15.75" height="18" rx="3" fill="#fb7185" stroke="#0d1117" stroke-width="0.6"><title>Shell: 12400 bytes</title></rect>
+<rect x="495.36" y="44" width="8.64" height="18" rx="3" fill="#a78bfa" stroke="#0d1117" stroke-width="0.6"><title>HTML: 6800 bytes</title></rect>
+<rect x="16.00" y="74.0" width="10" height="10" rx="2" fill="#6366f1"/>
+<text x="32.00" y="84.0" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">47.4%</tspan> Python</text>
+<rect x="120.00" y="74.0" width="10" height="10" rx="2" fill="#22d3ee"/>
+<text x="136.00" y="84.0" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">25.1%</tspan> TypeScript</text>
+<rect x="252.00" y="74.0" width="10" height="10" rx="2" fill="#34d399"/>
+<text x="268.00" y="84.0" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">14.1%</tspan> Go</text>
+<rect x="328.00" y="74.0" width="10" height="10" rx="2" fill="#fbbf24"/>
+<text x="344.00" y="84.0" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">8.4%</tspan> Rust</text>
+<rect x="411.00" y="74.0" width="10" height="10" rx="2" fill="#fb7185"/>
+<text x="427.00" y="84.0" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">3.2%</tspan> Shell</text>
+</svg></div>
+    </section>
+    <footer>由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 6 轮视觉打磨 · 可直接用于 GitHub Profile README。</footer>
+  </main>
+</body>
+</html>
