@@ -41,7 +41,7 @@ def test_demo_charts_returns_six_svg_files():
     from createchart.charts import demo_charts
 
     charts = demo_charts()
-    assert set(charts) == {"profile", "repos", "languages", "activity", "momentum", "highlights", "releases", "cadence", "languages_mix", "health", "network", "data_story", "heatmap", "milestones", "roadmap", "community", "quality"}
+    assert set(charts) == {"profile", "repos", "languages", "activity", "momentum", "highlights", "releases", "cadence", "languages_mix", "health", "network", "data_story", "heatmap", "milestones", "roadmap", "community", "quality", "delivery", "growth"}
     assert all(svg.startswith("<svg") and svg.endswith("</svg>") for svg in charts.values())
 
 
@@ -69,8 +69,8 @@ def test_english_labels_remain_default():
 
 def test_preview_polish_rounds_are_visible():
     html = preview_html(demo_charts(lang="zh"), lang="zh")
-    assert "第 16 轮" in html
-    assert "第 16 轮视觉打磨" in html
+    assert "第 17 轮" in html
+    assert "第 17 轮视觉打磨" in html
     assert "累计星标" in html
     assert "rgba(129, 140, 248, .78)" in html
 
@@ -166,3 +166,15 @@ def test_preview_includes_round_twelve_cards():
     assert "15 / 路线图" in html
     assert "16 / 社区温度" in html
     assert "17 / 代码质量" in html
+
+
+def test_preview_includes_round_thirteen_cards():
+    charts = demo_charts(lang="zh")
+    html = preview_html(charts, lang="zh")
+    assert "交付节奏" in charts["delivery"]
+    assert "社区增长" in charts["growth"]
+    assert "DELIVERY" in html
+    assert "GROWTH" in html
+    assert "18 / 交付节奏" in html
+    assert "19 / 社区增长" in html
+    assert "第 17 轮" in html

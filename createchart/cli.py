@@ -22,6 +22,8 @@ from .charts import (
     roadmap_card,
     community_pulse,
     code_quality,
+    delivery_cadence,
+    community_growth,
     language_mix,
     preview_html,
     repo_health,
@@ -56,9 +58,9 @@ def main(argv: list[str] | None = None) -> int:
             (output / f"{name}.svg").write_text(svg, encoding="utf-8")
         if args.preview_html:
             (output / "preview.html").write_text(preview_html(charts, lang=args.lang), encoding="utf-8")
-            print(f"Wrote 17 demo charts and preview.html to {output.resolve()}")
+            print(f"Wrote {len(charts)} demo charts and preview.html to {output.resolve()}")
         else:
-            print(f"Wrote 17 demo charts to {output.resolve()}")
+            print(f"Wrote {len(charts)} demo charts to {output.resolve()}")
         return 0
 
     if not args.username:
@@ -105,8 +107,10 @@ def main(argv: list[str] | None = None) -> int:
     (output / "roadmap.svg").write_text(roadmap_card(user, repos, lang=args.lang), encoding="utf-8")
     (output / "community.svg").write_text(community_pulse(user, repos, lang=args.lang), encoding="utf-8")
     (output / "quality.svg").write_text(code_quality(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "delivery.svg").write_text(delivery_cadence(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "growth.svg").write_text(community_growth(user, repos, lang=args.lang), encoding="utf-8")
 
-    print(f"Wrote 17 charts to {output.resolve()}")
+    print(f"Wrote 19 charts to {output.resolve()}")
     return 0
 
 

@@ -26,11 +26,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 16 轮：路线图、社区温度与代码质量卡片",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 17 轮：交付节奏与社区增长双视图",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 16 轮视觉打磨 · 新增路线图、社区温度与代码质量卡片 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 17 轮视觉打磨 · 新增交付节奏与社区增长视图 · 可直接用于 GitHub Profile README。",
         "activity_title": "活跃热力",
         "activity_section": "04 / 贡献活跃度",
         "activity_peak": "峰值",
@@ -103,6 +103,16 @@ LANGUAGE_LABELS = {
         "quality_coverage": "测试覆盖",
         "quality_checks": "检查通过",
         "quality_debt": "待清理项",
+        "delivery_title": "交付节奏",
+        "delivery_section": "18 / 交付节奏",
+        "delivery_weekly": "本周交付",
+        "delivery_review": "评审时长",
+        "delivery_stability": "稳定性",
+        "growth_title": "社区增长",
+        "growth_section": "19 / 社区增长",
+        "growth_stars": "星标增长",
+        "growth_forks": "派生增长",
+        "growth_watchers": "关注增长",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -118,11 +128,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · sixteenth pass with roadmap, community pulse, and code quality cards",
+        "preview_subtitle": "GitHub profile statistics · offline demo · round 17 with delivery cadence and community growth views",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · sixteenth polish pass with roadmap, community pulse, and code quality cards · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · round 17 polish with delivery cadence and community growth views · ready for GitHub Profile README.",
         "activity_title": "Contribution activity",
         "activity_section": "04 / Activity",
         "activity_peak": "Peak",
@@ -195,6 +205,16 @@ LANGUAGE_LABELS = {
         "quality_coverage": "Test coverage",
         "quality_checks": "Checks passed",
         "quality_debt": "Cleanup items",
+        "delivery_title": "Delivery cadence",
+        "delivery_section": "18 / Delivery cadence",
+        "delivery_weekly": "Weekly shipped",
+        "delivery_review": "Review time",
+        "delivery_stability": "Stability",
+        "growth_title": "Community growth",
+        "growth_section": "19 / Community growth",
+        "growth_stars": "Star growth",
+        "growth_forks": "Fork growth",
+        "growth_watchers": "Watcher growth",
     },
 }
 
@@ -711,6 +731,49 @@ def code_quality(user: Dict[str, object], repos: List[Dict[str, object]], lang: 
     return _svg_footer(parts)
 
 
+def delivery_cadence(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Render a delivery cadence card with circle metrics and a progress strip."""
+    parts = _svg_header(t("delivery_title", lang), 520, 168)
+    metrics = [
+        (t("delivery_weekly", lang), "18", 24),
+        (t("delivery_review", lang), "3.2h", 8),
+        (t("delivery_stability", lang), "96%", 100),
+    ]
+    for idx, (label, value, maximum) in enumerate(metrics):
+        cx = 82 + idx * 178
+        cy = 82
+        radius = 28
+        circumference = 2 * 3.14159 * radius
+        fill = min(1.0, (18 if idx == 0 else (8 if idx == 1 else 96)) / 100)
+        parts.append(f'<circle cx="{cx}" cy="{cy}" r="{radius}" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="7"/>')
+        parts.append(f'<circle cx="{cx}" cy="{cy}" r="{radius}" fill="none" stroke="{PALETTE[idx]}" stroke-width="7" stroke-linecap="round" stroke-dasharray="{circumference * fill:.2f} {circumference:.2f}" transform="rotate(-90 {cx} {cy})"/>')
+        parts.append(f'<text x="{cx}" y="{cy + 5}" text-anchor="middle" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" font-variant-numeric="tabular-nums">{value}</text>')
+        parts.append(f'<text x="{cx}" y="{cy + 50}" text-anchor="middle" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+    parts.append('<rect x="18" y="146" width="484" height="7" rx="3.5" fill="#ffffff" fill-opacity="0.07"/>')
+    parts.append('<rect x="18" y="146" width="348" height="7" rx="3.5" fill="url(#accent)"/>')
+    return _svg_footer(parts)
+
+
+def community_growth(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Render a community growth card with mini trend lines."""
+    parts = _svg_header(t("growth_title", lang), 520, 168)
+    trends = [
+        (t("growth_stars", lang), 1240, [(18, 134), (70, 122), (122, 128), (174, 104), (226, 96), (278, 78)]),
+        (t("growth_forks", lang), 86, [(278, 134), (330, 126), (382, 118), (434, 104), (486, 92), (500, 86)]),
+        (t("growth_watchers", lang), 312, [(18, 92), (70, 96), (122, 84), (174, 88), (226, 76), (278, 70)]),
+    ]
+    for idx, (label, value, points) in enumerate(trends):
+        color = PALETTE[idx]
+        path = " ".join(f"{'M' if i == 0 else 'L'}{x},{y}" for i, (x, y) in enumerate(points))
+        parts.append(f'<path d="{path}" fill="none" stroke="{color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>')
+        last_x, last_y = points[-1]
+        parts.append(f'<circle cx="{last_x}" cy="{last_y}" r="3" fill="{color}"/>')
+        label_y = 28 + idx * 42
+        parts.append(f'<text x="18" y="{label_y}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+        parts.append(_svg_value_label(500, label_y, value, anchor="end"))
+    return _svg_footer(parts)
+
+
 def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: Dict[str, Dict[str, int]]) -> Dict[str, int]:
     """Sum language bytes across repositories."""
     total: Counter[str] = Counter()
@@ -769,6 +832,8 @@ def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
         "roadmap": roadmap_card(user, repos, lang=lang),
         "community": community_pulse(user, repos, lang=lang),
         "quality": code_quality(user, repos, lang=lang),
+        "delivery": delivery_cadence(user, repos, lang=lang),
+        "growth": community_growth(user, repos, lang=lang),
     }
 
 
@@ -845,6 +910,7 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       grid-template-areas:
         "profile profile"
         "repos languages"
+        "delivery delivery"
         "activity activity"
         "momentum highlights"
         "releases releases"
@@ -852,25 +918,28 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
         "health network"
         "data_story roadmap"
         "heatmap heatmap"
-        "community quality";
+        "community quality"
+        "growth growth";
     }}
     .card {{ min-width: 0; }}
     .card:nth-child(1) {{ grid-area: profile; }}
     .card:nth-child(2) {{ grid-area: repos; }}
     .card:nth-child(3) {{ grid-area: languages; }}
-    .card:nth-child(4) {{ grid-area: activity; }}
-    .card:nth-child(5) {{ grid-area: momentum; }}
-    .card:nth-child(6) {{ grid-area: highlights; }}
-    .card:nth-child(7) {{ grid-area: releases; }}
-    .card:nth-child(8) {{ grid-area: cadence; }}
-    .card:nth-child(9) {{ grid-area: languages_mix; }}
-    .card:nth-child(10) {{ grid-area: health; }}
-    .card:nth-child(11) {{ grid-area: network; }}
-    .card:nth-child(12) {{ grid-area: data_story; }}
-    .card:nth-child(13) {{ grid-area: roadmap; }}
-    .card:nth-child(14) {{ grid-area: heatmap; }}
-    .card:nth-child(15) {{ grid-area: community; }}
-    .card:nth-child(16) {{ grid-area: quality; }}
+    .card:nth-child(4) {{ grid-area: delivery; }}
+    .card:nth-child(5) {{ grid-area: activity; }}
+    .card:nth-child(6) {{ grid-area: momentum; }}
+    .card:nth-child(7) {{ grid-area: highlights; }}
+    .card:nth-child(8) {{ grid-area: releases; }}
+    .card:nth-child(9) {{ grid-area: cadence; }}
+    .card:nth-child(10) {{ grid-area: languages_mix; }}
+    .card:nth-child(11) {{ grid-area: health; }}
+    .card:nth-child(12) {{ grid-area: network; }}
+    .card:nth-child(13) {{ grid-area: data_story; }}
+    .card:nth-child(14) {{ grid-area: roadmap; }}
+    .card:nth-child(15) {{ grid-area: heatmap; }}
+    .card:nth-child(16) {{ grid-area: community; }}
+    .card:nth-child(17) {{ grid-area: quality; }}
+    .card:nth-child(18) {{ grid-area: growth; }}
     footer {{ margin-top: 18px; color: #6e7681; font-size: 12px; line-height: 1.6; }}
     @media (max-width: 900px) {{
       body {{ padding: 24px 16px 40px; }}
@@ -891,6 +960,7 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       {card("profile", "profile_section", "READY")}
       {card("repos", "repos_section", "RANKED")}
       {card("languages", "languages_section", "SPLIT")}
+      {card("delivery", "delivery_section", "DELIVERY")}
       {card("activity", "activity_section", "PULSE", wide=True)}
       {card("momentum", "momentum_section", "TREND")}
       {card("highlights", "highlights_section", "SPOTLIGHT")}
@@ -905,6 +975,7 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       {card("roadmap", "roadmap_section", "ROADMAP", wide=True)}
       {card("community", "community_section", "COMMUNITY")}
       {card("quality", "quality_section", "QUALITY")}
+      {card("growth", "growth_section", "GROWTH", wide=True)}
     </section>
     <footer>{escape(t("preview_footer", lang))}</footer>
   </main>
