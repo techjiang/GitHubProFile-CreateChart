@@ -19,18 +19,18 @@ LANGUAGE_LABELS = {
         "followers": "关注者",
         "following": "正在关注",
         "public_repos": "公开仓库",
-        "total_stars": "总星标",
+        "total_stars": "累计星标",
         "no_language_data": "暂无语言数据",
         "no_repositories": "暂无仓库数据",
         "bytes": "字节",
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 本轮聚焦细节与可读性",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 1 轮：统一卡片描边与标题层级",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 5 轮收尾 · 可直接用于 GitHub Profile README。",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -159,8 +159,9 @@ def repo_bars(
         parts.append(f'<circle cx="28" cy="{y + 8}" r="9" fill="{rank_color}" fill-opacity="0.18" stroke="{rank_color}" stroke-opacity="0.5"/>')
         parts.append(f'<text x="28" y="{y + 12}" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10" font-weight="700">{idx + 1}</text>')
         parts.append(f'<text x="44" y="{y + 14}" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">{escape(name)}</text>')
+        parts.append(f'<rect x="180" y="{y}" width="300" height="16" rx="3" fill="#ffffff" fill-opacity="0.04"/>')
         parts.append(f'<rect x="180" y="{y}" width="{bar:.2f}" height="16" rx="3" fill="url(#accent)"><title>{escape(name)}: {value}</title></rect>')
-        parts.append(f'<text x="{190 + bar:.2f}" y="{y + 14}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum">{value:,}</text>')
+        parts.append(f'<text x="496" y="{y + 14}" text-anchor="end" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum">{value:,}</text>')
     return _svg_footer(parts)
 
 
@@ -296,7 +297,7 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     }}
     .card:first-child {{ grid-column: 1 / -1; }}
     .card svg {{ display: block; width: 100%; height: auto; }}
-    .card:hover {{ border-color: rgba(99, 102, 241, .55); transform: translateY(-2px); }}
+    .card:hover {{ border-color: rgba(99, 102, 241, .72); box-shadow: 0 22px 52px rgba(0,0,0,.38), 0 0 0 1px rgba(99,102,241,.18); transform: translateY(-2px); }}
     .card svg text {{ paint-order: stroke; }}
     footer {{ margin-top: 22px; color: #6e7681; font-size: 12px; line-height: 1.6; }}
     @media (max-width: 900px) {{

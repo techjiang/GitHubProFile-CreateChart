@@ -65,3 +65,11 @@ def test_english_labels_remain_default():
     charts = demo_charts()
     assert "Followers" in charts["profile"]
     assert "Top repositories" in charts["repos"]
+
+
+def test_preview_polish_rounds_are_visible():
+    html = preview_html(demo_charts(lang="zh"), lang="zh")
+    assert "第 1 轮" in html
+    assert "第 5 轮收尾" in html
+    assert "累计星标" in html
+    assert "rgba(99, 102, 241, .72)" in html
