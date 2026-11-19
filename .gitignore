@@ -6,3 +6,5 @@ charts/
 .env
 charts-zh/
 screenshot-current.png
+build/
+dist/

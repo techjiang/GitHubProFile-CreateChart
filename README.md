@@ -15,6 +15,35 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Refined typography, spacing, card hover states, status badges and title dividers
 - Twenty-three focused visual polish rounds with advanced insight cards, release/cadence views, language composition, repository health, collaboration network, data storytelling, annual heatmap, milestones, roadmap, community pulse, code quality, delivery cadence, community growth, issue aging, review load, release health, docs pulse, community sentiment, velocity snapshot, stability radar, dependency graph, quality gates, and zh/en preview copy updates
 
+## Quick start
+
+Python 3.9+ is required.
+
+```bash
+python3 -m pip install -e .
+createchart --demo --preview-html --lang zh -o charts-zh
+```
+
+Open `charts-zh/preview.html` in a browser. No GitHub token or network access is needed for this preview.
+
+To generate real GitHub profile charts:
+
+```bash
+export GITHUB_TOKEN=ghp_xxx
+createchart octocat --lang zh -o charts
+```
+
+`GITHUB_TOKEN` is optional, but recommended to avoid the low unauthenticated API rate limit.
+
+For a release archive, download `Release/createchart-0.1.1.zip` from this repository, then run:
+
+```bash
+unzip createchart-0.1.1.zip -d createchart-0.1.1
+cd createchart-0.1.1
+python3 -m pip install -e .
+createchart --demo --preview-html --lang zh -o charts-zh
+```
+
 ## Install
 
 ```bash
@@ -84,7 +113,7 @@ createchart --demo --preview-html --lang zh -o charts-zh
 
 Open `charts/preview.html` locally, or use this screenshot:
 
-![CreateChart preview](createchart-preview.png)
+![CreateChart preview](createchart-preview-final.jpg)
 
 ## Development
 
