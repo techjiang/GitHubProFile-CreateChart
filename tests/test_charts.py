@@ -1,4 +1,4 @@
-from createchart.charts import aggregate_languages, language_chart, preview_html, profile_summary, repo_bars
+from createchart.charts import aggregate_languages, language_chart, preview_html, profile_summary, repo_bars, demo_charts, t
 
 
 def test_language_chart_empty():
@@ -51,3 +51,17 @@ def test_preview_html_wraps_all_charts():
     assert "<svg>p</svg>" in html
     assert "<svg>r</svg>" in html
     assert "<svg>l</svg>" in html
+
+
+def test_chinese_labels_are_used():
+    assert t("followers", "zh") == "关注者"
+    charts = demo_charts(lang="zh")
+    assert "关注者" in charts["profile"]
+    assert "热门仓库" in charts["repos"]
+    assert "语言分布" in charts["languages"]
+
+
+def test_english_labels_remain_default():
+    charts = demo_charts()
+    assert "Followers" in charts["profile"]
+    assert "Top repositories" in charts["repos"]

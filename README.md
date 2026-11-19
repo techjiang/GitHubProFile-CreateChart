@@ -10,6 +10,7 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Pure SVG output — no JavaScript, works in any GitHub README
 - Polished cards with contrast labels, rank badges, legend percentages, and value emphasis
 - Offline demo mode for previewing charts without GitHub API calls
+- Chinese and English labels via `--lang zh` / `--lang en`
 
 ## Install
 
@@ -48,6 +49,9 @@ Run the offline demo to generate three sample charts and a standalone preview pa
 
 ```bash
 createchart --demo --preview-html -o charts
+
+# Chinese labels
+createchart --demo --preview-html --lang zh -o charts-zh
 ```
 
 Open `charts/preview.html` locally, or use this screenshot:

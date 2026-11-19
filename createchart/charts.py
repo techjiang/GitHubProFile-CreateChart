@@ -11,6 +11,58 @@ PALETTE = [
     "#fb7185", "#a78bfa", "#f472b6", "#94a3b8",
 ]
 
+LANGUAGE_LABELS = {
+    "zh": {
+        "profile_title": "GitHub 概览",
+        "repos_title": "热门仓库",
+        "languages_title": "语言分布",
+        "followers": "关注者",
+        "following": "正在关注",
+        "public_repos": "公开仓库",
+        "total_stars": "总星标",
+        "no_language_data": "暂无语言数据",
+        "no_repositories": "暂无仓库数据",
+        "bytes": "字节",
+        "preview_title": "CreateChart · 预览",
+        "preview_eyebrow": "实时 SVG 图表",
+        "preview_heading": "CreateChart 预览",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 连续五轮视觉优化",
+        "profile_section": "01 / 个人概览",
+        "repos_section": "02 / 仓库排行",
+        "languages_section": "03 / 语言分布",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 可直接用于 GitHub Profile README。",
+    },
+    "en": {
+        "profile_title": "GitHub overview",
+        "repos_title": "Top repositories",
+        "languages_title": "Languages",
+        "followers": "Followers",
+        "following": "Following",
+        "public_repos": "Public repos",
+        "total_stars": "Total stars",
+        "no_language_data": "No language data",
+        "no_repositories": "No repositories",
+        "bytes": "bytes",
+        "preview_title": "CreateChart · Preview",
+        "preview_eyebrow": "Live SVG charts",
+        "preview_heading": "CreateChart preview",
+        "preview_subtitle": "GitHub profile statistics · offline demo · five more rounds of visual polish",
+        "profile_section": "01 / Profile",
+        "repos_section": "02 / Repositories",
+        "languages_section": "03 / Languages",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · ready for GitHub Profile README.",
+    },
+}
+
+DEFAULT_LANG = "en"
+
+
+def t(key: str, lang: str = DEFAULT_LANG) -> str:
+    """Return a localized UI string with English fallback."""
+    return LANGUAGE_LABELS.get(lang, LANGUAGE_LABELS[DEFAULT_LANG]).get(
+        key, LANGUAGE_LABELS[DEFAULT_LANG].get(key, key)
+    )
+
 
 def _svg_header(title: str, width: int, height: int) -> List[str]:
     return [
@@ -38,12 +90,12 @@ def _svg_footer(lines: List[str]) -> str:
     return "\n".join(lines)
 
 
-def language_chart(languages: Dict[str, int], title: str = "Languages") -> str:
+def language_chart(languages: Dict[str, int], title: str | None = None, lang: str = DEFAULT_LANG) -> str:
     """Build a horizontal stacked bar chart of byte counts by language."""
     total = sum(v for v in languages.values() if v > 0)
-    parts = _svg_header(title, 520, 120)
+    parts = _svg_header(title or t("languages_title", lang), 520, 120)
     if total == 0:
-        parts.append('<text x="16" y="64" fill="#8b949e" font-family="sans-serif" font-size="13">No language data</text>')
+        parts.append(f'<text x="16" y="64" fill="#8b949e" font-family="sans-serif" font-size="13">{escape(t("no_language_data", lang))}</text>')
         return _svg_footer(parts)
 
     x = 16.0
@@ -56,7 +108,7 @@ def language_chart(languages: Dict[str, int], title: str = "Languages") -> str:
             continue
         segment = bar_width * value / total
         color = PALETTE[idx % len(PALETTE)]
-        parts.append(f'<rect x="{x:.2f}" y="44" width="{segment:.2f}" height="18" rx="3" fill="{color}" stroke="#0d1117" stroke-width="0.6"><title>{escape(lang)}: {value} bytes</title></rect>')
+        parts.append(f'<rect x="{x:.2f}" y="44" width="{segment:.2f}" height="18" rx="3" fill="{color}" stroke="#0d1117" stroke-width="0.6"><title>{escape(lang)}: {value} {escape(t("bytes", lang))}</title></rect>')
         x += segment
 
     legend_x = 16.0
@@ -73,7 +125,12 @@ def language_chart(languages: Dict[str, int], title: str = "Languages") -> str:
     return _svg_footer(parts)
 
 
-def repo_bars(repos: Iterable[Dict[str, object]], metric: str = "stargazers_count", title: str = "Top repositories") -> str:
+def repo_bars(
+    repos: Iterable[Dict[str, object]],
+    metric: str = "stargazers_count",
+    title: str | None = None,
+    lang: str = DEFAULT_LANG,
+) -> str:
     """Build a bar chart ranking repositories by a numeric metric."""
     ranked: List[Tuple[str, int]] = []
     for repo in repos:
@@ -88,9 +145,9 @@ def repo_bars(repos: Iterable[Dict[str, object]], metric: str = "stargazers_coun
     row_height = 30
     width = 560
     height = max(100, 60 + row_height * len(ranked))
-    parts = _svg_header(title, width, height)
+    parts = _svg_header(title or t("repos_title", lang), width, height)
     if not ranked:
-        parts.append('<text x="16" y="64" fill="#8b949e" font-family="sans-serif" font-size="13">No repositories</text>')
+        parts.append(f'<text x="16" y="64" fill="#8b949e" font-family="sans-serif" font-size="13">{escape(t("no_repositories", lang))}</text>')
         return _svg_footer(parts)
 
     max_value = max(value for _, value in ranked) or 1
@@ -107,7 +164,7 @@ def repo_bars(repos: Iterable[Dict[str, object]], metric: str = "stargazers_coun
     return _svg_footer(parts)
 
 
-def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]]) -> str:
+def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
     """Build a compact summary card for a GitHub user."""
     repo_list = list(repos)
     followers = int(user.get("followers") or 0)
@@ -121,17 +178,17 @@ def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]])
             pass
 
     name = str(user.get("name") or user.get("login") or "GitHub user")
-    lines = _svg_header(f"{name} · GitHub overview", 520, 170)
+    lines = _svg_header(f"{name} · {t('profile_title', lang)}", 520, 170)
     stats = [
-        ("Followers", followers),
-        ("Following", following),
-        ("Public repos", public_repos),
-        ("Total stars", total_stars),
+        (t("followers", lang), followers),
+        (t("following", lang), following),
+        (t("public_repos", lang), public_repos),
+        (t("total_stars", lang), total_stars),
     ]
     for idx, (label, value) in enumerate(stats):
         x = 16 + (idx % 2) * 252
         y = 62 + (idx // 2) * 52
-        lines.append(f'<text x="{x}" y="{y}" fill="#a5b4fc" font-family="sans-serif" font-size="11" font-weight="700" letter-spacing="1">{escape(label).upper()}</text>')
+        lines.append(f'<text x="{x}" y="{y}" fill="#a5b4fc" font-family="sans-serif" font-size="11" font-weight="700" letter-spacing="1">{escape(label)}</text>')
         lines.append(f'<rect x="{x}" y="{y + 8}" width="220" height="34" rx="7" fill="#161b22" stroke="#30363d"/>')
         lines.append(f'<text x="{x + 12}" y="{y + 31}" fill="#e6edf3" font-family="sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum">{value}</text>')
     return _svg_footer(lines)
@@ -174,21 +231,21 @@ def demo_data() -> Tuple[Dict[str, object], List[Dict[str, object]], Dict[str, i
     return user, repos, languages
 
 
-def demo_charts() -> Dict[str, str]:
+def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
     """Build sample charts for local preview without network access."""
     user, repos, languages = demo_data()
     return {
-        "profile": profile_summary(user, repos),
-        "repos": repo_bars(repos),
-        "languages": language_chart(languages, title="Language distribution"),
+        "profile": profile_summary(user, repos, lang=lang),
+        "repos": repo_bars(repos, lang=lang),
+        "languages": language_chart(languages, lang=lang),
     }
 
 
-def preview_html(charts: Dict[str, str]) -> str:
+def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     """Wrap generated SVG charts into a single standalone preview page."""
-    title = escape("CreateChart · Preview")
+    title = escape(t("preview_title", lang))
     return f"""<!doctype html>
-<html lang="en">
+<html lang="{escape(lang)}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -251,16 +308,16 @@ def preview_html(charts: Dict[str, str]) -> str:
 <body>
   <main>
     <header>
-      <div class="eyebrow">Live SVG charts</div>
-      <h1>CreateChart preview</h1>
-      <div class="subtitle">GitHub profile statistics · offline demo · five more rounds of visual polish</div>
+      <div class="eyebrow">{escape(t("preview_eyebrow", lang))}</div>
+      <h1>{escape(t("preview_heading", lang))}</h1>
+      <div class="subtitle">{escape(t("preview_subtitle", lang))}</div>
     </header>
     <section class="grid">
-      <div class="card"><span class="section-label">01 / Profile</span>{charts["profile"]}</div>
-      <div class="card"><span class="section-label">02 / Repositories</span>{charts["repos"]}</div>
-      <div class="card"><span class="section-label">03 / Languages</span>{charts["languages"]}</div>
+      <div class="card"><span class="section-label">{escape(t("profile_section", lang))}</span>{charts["profile"]}</div>
+      <div class="card"><span class="section-label">{escape(t("repos_section", lang))}</span>{charts["repos"]}</div>
+      <div class="card"><span class="section-label">{escape(t("languages_section", lang))}</span>{charts["languages"]}</div>
     </section>
-    <footer>Generated locally by CreateChart · pure SVG · ready for GitHub Profile README.</footer>
+    <footer>{escape(t("preview_footer", lang))}</footer>
   </main>
 </body>
 </html>

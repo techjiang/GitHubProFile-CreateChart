@@ -14,6 +14,7 @@ from .github_client import GitHubClient
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="createchart", description="Generate GitHub statistic SVG charts")
+    parser.add_argument("--lang", choices=["zh", "en"], default="en", help="Chart language (zh or en)")
     parser.add_argument("username", nargs="?", help="GitHub username (omit with --demo)")
     parser.add_argument("--demo", action="store_true", help="Generate local demo charts without GitHub API")
     parser.add_argument("-o", "--output-dir", default="charts", help="Directory to write SVG files")
@@ -29,11 +30,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.demo:
         output = Path(args.output_dir)
         output.mkdir(parents=True, exist_ok=True)
-        charts = demo_charts()
+        charts = demo_charts(lang=args.lang)
         for name, svg in charts.items():
             (output / f"{name}.svg").write_text(svg, encoding="utf-8")
         if args.preview_html:
-            (output / "preview.html").write_text(preview_html(charts), encoding="utf-8")
+            (output / "preview.html").write_text(preview_html(charts, lang=args.lang), encoding="utf-8")
             print(f"Wrote 3 demo charts and preview.html to {output.resolve()}")
         else:
             print(f"Wrote 3 demo charts to {output.resolve()}")
@@ -54,8 +55,8 @@ def main(argv: list[str] | None = None) -> int:
     output = Path(args.output_dir)
     output.mkdir(parents=True, exist_ok=True)
 
-    (output / "profile.svg").write_text(profile_summary(user, repos), encoding="utf-8")
-    (output / "repos.svg").write_text(repo_bars(repos, metric=args.metric), encoding="utf-8")
+    (output / "profile.svg").write_text(profile_summary(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "repos.svg").write_text(repo_bars(repos, metric=args.metric, lang=args.lang), encoding="utf-8")
 
     languages: Dict[str, int] = {}
     if args.repo_languages:
@@ -68,7 +69,7 @@ def main(argv: list[str] | None = None) -> int:
         # user has no aggregate language endpoint; use top repo as a lightweight default
         if repos:
             languages = client.list_languages(args.username, str(repos[0].get("name", "")))
-    (output / "languages.svg").write_text(language_chart(languages), encoding="utf-8")
+    (output / "languages.svg").write_text(language_chart(languages, lang=args.lang), encoding="utf-8")
 
     print(f"Wrote 3 charts to {output.resolve()}")
     return 0
