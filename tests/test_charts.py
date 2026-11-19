@@ -41,7 +41,7 @@ def test_demo_charts_returns_six_svg_files():
     from createchart.charts import demo_charts
 
     charts = demo_charts()
-    assert set(charts) == {"profile", "repos", "languages", "activity", "momentum", "highlights", "releases", "cadence", "languages_mix", "health", "network", "data_story", "heatmap", "milestones", "roadmap", "community", "quality", "delivery", "growth", "issue_aging", "review_load", "release_health", "docs_pulse", "sentiment"}
+    assert set(charts) == {"profile", "repos", "languages", "activity", "momentum", "highlights", "releases", "cadence", "languages_mix", "health", "network", "data_story", "heatmap", "milestones", "roadmap", "community", "quality", "delivery", "growth", "issue_aging", "review_load", "release_health", "docs_pulse", "sentiment", "velocity", "stability", "dependencies", "quality_gates"}
     assert all(svg.startswith("<svg") and svg.endswith("</svg>") for svg in charts.values())
 
 
@@ -69,8 +69,8 @@ def test_english_labels_remain_default():
 
 def test_preview_polish_rounds_are_visible():
     html = preview_html(demo_charts(lang="zh"), lang="zh")
-    assert "第 18 轮" in html
-    assert "第 18 轮视觉打磨" in html
+    assert "第 23 轮" in html
+    assert "第 23 轮视觉打磨" in html
     assert "累计星标" in html
     assert "rgba(129, 140, 248, .78)" in html
 
@@ -177,7 +177,7 @@ def test_preview_includes_round_thirteen_cards():
     assert "GROWTH" in html
     assert "18 / 交付节奏" in html
     assert "19 / 社区增长" in html
-    assert "第 18 轮" in html
+    assert "第 23 轮" in html
 
 
 def test_preview_includes_round_fourteen_cards():
@@ -192,5 +192,19 @@ def test_preview_includes_round_fourteen_cards():
         assert badge in html
     for section in ("20 / 问题老化", "21 / 评审负载", "22 / 发布健康度", "23 / 文档脉搏", "24 / 社区情绪"):
         assert section in html
-    assert len(charts) == 24
-    assert "第 18 轮" in html
+    assert len(charts) >= 24
+    assert "第 23 轮" in html
+
+def test_preview_includes_round_twenty_three_cards():
+    charts = demo_charts(lang="zh")
+    html = preview_html(charts, lang="zh")
+    assert "产能快照" in charts["velocity"]
+    assert "稳定性雷达" in charts["stability"]
+    assert "依赖脉络" in charts["dependencies"]
+    assert "质量门禁" in charts["quality_gates"]
+    for badge in ("VELOCITY", "STABLE", "DEPEND", "GATES"):
+        assert badge in html
+    for section in ("25 / 产能快照", "26 / 稳定性雷达", "27 / 依赖脉络", "28 / 质量门禁"):
+        assert section in html
+    assert len(charts) == 28
+    assert "第 23 轮" in html

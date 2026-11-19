@@ -26,11 +26,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 18 轮：问题老化、评审负载、发布健康、文档脉搏与社区情绪",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 23 轮：产能快照、稳定性雷达、依赖脉络与质量门禁",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 18 轮视觉打磨 · 新增五项社区与发布健康视图 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 23 轮视觉打磨 · 新增工程效能与质量门禁视图 · 可直接用于 GitHub Profile README。",
         "activity_title": "活跃热力",
         "activity_section": "04 / 贡献活跃度",
         "activity_peak": "峰值",
@@ -143,6 +143,26 @@ LANGUAGE_LABELS = {
         "community_sentiment_positive": "正向反馈",
         "community_sentiment_neutral": "中性反馈",
         "community_sentiment_response": "响应满意度",
+        "velocity_title": "产能快照",
+        "velocity_section": "25 / 产能快照",
+        "velocity_throughput": "本周吞吐",
+        "velocity_cycle": "周期时间",
+        "velocity_prediction": "预测完成",
+        "stability_title": "稳定性雷达",
+        "stability_section": "26 / 稳定性雷达",
+        "stability_uptime": "可用性",
+        "stability_incidents": "事故数",
+        "stability_mttr": "恢复时长",
+        "dependency_title": "依赖脉络",
+        "dependency_section": "27 / 依赖脉络",
+        "dependency_direct": "直接依赖",
+        "dependency_stale": "陈旧依赖",
+        "dependency_health": "健康度",
+        "quality_gate_title": "质量门禁",
+        "quality_gate_section": "28 / 质量门禁",
+        "quality_gate_tests": "测试门禁",
+        "quality_gate_review": "评审门禁",
+        "quality_gate_release": "发布门禁",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -158,11 +178,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · round 18 with issue aging, review load, release health, docs pulse, and community sentiment",
+        "preview_subtitle": "GitHub profile statistics · offline demo · round 23 with velocity, stability, dependency, and quality gates",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · round 18 polish with five new community and release health views · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · round 23 polish with engineering throughput and quality gates · ready for GitHub Profile README.",
         "activity_title": "Contribution activity",
         "activity_section": "04 / Activity",
         "activity_peak": "Peak",
@@ -275,6 +295,26 @@ LANGUAGE_LABELS = {
         "community_sentiment_positive": "Positive",
         "community_sentiment_neutral": "Neutral",
         "community_sentiment_response": "Response satisfaction",
+        "velocity_title": "Velocity snapshot",
+        "velocity_section": "25 / Velocity snapshot",
+        "velocity_throughput": "Weekly throughput",
+        "velocity_cycle": "Cycle time",
+        "velocity_prediction": "Forecast",
+        "stability_title": "Stability radar",
+        "stability_section": "26 / Stability radar",
+        "stability_uptime": "Uptime",
+        "stability_incidents": "Incidents",
+        "stability_mttr": "MTTR",
+        "dependency_title": "Dependency graph",
+        "dependency_section": "27 / Dependency graph",
+        "dependency_direct": "Direct deps",
+        "dependency_stale": "Stale deps",
+        "dependency_health": "Health",
+        "quality_gate_title": "Quality gates",
+        "quality_gate_section": "28 / Quality gates",
+        "quality_gate_tests": "Tests",
+        "quality_gate_review": "Review",
+        "quality_gate_release": "Release",
     },
 }
 
@@ -912,6 +952,92 @@ def community_sentiment(user: Dict[str, object], repos: List[Dict[str, object]],
     return _svg_footer(lines)
 
 
+def velocity_snapshot(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a delivery throughput snapshot with deterministic sample signals."""
+    repo_count = len(repos)
+    throughput = max(6, repo_count * 3)
+    cycle_days = 2 + repo_count % 5
+    forecast = throughput * 2
+    parts = _svg_header(t("velocity_title", lang), 460, 175)
+    parts.append(f'<text x="18" y="60" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("velocity_throughput", lang))}</text>')
+    parts.append(_svg_value_label(442, 60, throughput, anchor="end"))
+    parts.append('<rect x="18" y="72" width="424" height="8" rx="4" fill="#ffffff" fill-opacity="0.08"/>')
+    parts.append(f'<rect x="18" y="72" width="{424 * min(1, throughput / 30):.2f}" height="8" rx="4" fill="url(#accent)"/>')
+    rows = [(t("velocity_cycle", lang), f"{cycle_days}d"), (t("velocity_prediction", lang), f"{forecast} pts")]
+    for idx, (label, value) in enumerate(rows):
+        x = 18 + idx * 220
+        parts.append(f'<text x="{x}" y="122" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+        parts.append(f'<text x="{x}" y="150" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="16" font-weight="700" font-variant-numeric="tabular-nums">{escape(value)}</text>')
+    return _svg_footer(parts)
+
+def stability_radar(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a compact three-axis stability radar."""
+    followers = int(user.get("followers") or 0)
+    uptime = 97 + followers % 30 / 10
+    incidents = max(0, followers % 4)
+    mttr = 1 + followers % 7
+    parts = _svg_header(t("stability_title", lang), 460, 190)
+    cx, cy, radius = 116, 108, 60
+    for ring in (0.4, 0.7, 1.0):
+        points = []
+        for idx in range(6):
+            angle = -3.141592653589793 / 2 + idx * 3.141592653589793 / 3
+            points.append(f"{cx + radius * ring * __import__('math').cos(angle):.1f},{cy + radius * ring * __import__('math').sin(angle):.1f}")
+        parts.append(f'<polygon points="{" ".join(points)}" fill="none" stroke="#30363d" stroke-width="1"/>')
+    values = [uptime / 100, max(0.2, 1 - incidents / 6), max(0.2, 1 - mttr / 10)] * 2
+    points = []
+    for idx, value in enumerate(values):
+        angle = -3.141592653589793 / 2 + idx * 3.141592653589793 / 3
+        points.append(f"{cx + radius * value * __import__('math').cos(angle):.1f},{cy + radius * value * __import__('math').sin(angle):.1f}")
+    parts.append(f'<polygon points="{" ".join(points)}" fill="rgba(99,102,241,.28)" stroke="#818cf8" stroke-width="2"/>')
+    rows = [(t("stability_uptime", lang), f"{uptime:.1f}%"), (t("stability_incidents", lang), str(incidents)), (t("stability_mttr", lang), f"{mttr}h")]
+    for idx, (label, value) in enumerate(rows):
+        y = 58 + idx * 42
+        parts.append(f'<text x="216" y="{y}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(label)}</text>')
+        parts.append(f'<text x="442" y="{y}" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" font-variant-numeric="tabular-nums">{escape(value)}</text>')
+    return _svg_footer(parts)
+
+def dependency_graph(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a dependency overview with hub-and-spoke layout."""
+    direct = min(18, 6 + len(repos))
+    stale = max(1, len(repos) // 3)
+    health = max(58, 94 - stale * 4)
+    parts = _svg_header(t("dependency_title", lang), 460, 180)
+    cx, cy = 116, 104
+    parts.append(f'<circle cx="{cx}" cy="{cy}" r="33" fill="rgba(99,102,241,.25)" stroke="#818cf8" stroke-width="2"/>')
+    parts.append(f'<text x="{cx}" y="{cy + 4}" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700">{direct}</text>')
+    for idx in range(8):
+        import math
+        angle = idx * 2 * math.pi / 8
+        x = cx + 78 * math.cos(angle)
+        y = cy + 58 * math.sin(angle)
+        parts.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#30363d" stroke-width="1"/>')
+        parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="7" fill="{PALETTE[idx % len(PALETTE)]}" opacity="0.9"/>')
+    rows = [(t("dependency_direct", lang), str(direct)), (t("dependency_stale", lang), str(stale)), (t("dependency_health", lang), f"{health}%")]
+    for idx, (label, value) in enumerate(rows):
+        y = 58 + idx * 42
+        parts.append(f'<text x="220" y="{y}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(label)}</text>')
+        parts.append(f'<text x="442" y="{y}" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" font-variant-numeric="tabular-nums">{escape(value)}</text>')
+    return _svg_footer(parts)
+
+def quality_gates(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a quality gate checklist with deterministic pass signals."""
+    followers = int(user.get("followers") or 0)
+    gates = [
+        (t("quality_gate_tests", lang), 86 + len(repos)),
+        (t("quality_gate_review", lang), 78 + followers % 12),
+        (t("quality_gate_release", lang), 91),
+    ]
+    parts = _svg_header(t("quality_gate_title", lang), 460, 175)
+    for idx, (label, value) in enumerate(gates):
+        value = min(99, value)
+        y = 62 + idx * 38
+        parts.append(f'<text x="18" y="{y}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(label)}</text>')
+        parts.append(f'<text x="442" y="{y}" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" font-weight="700" font-variant-numeric="tabular-nums">{value}%</text>')
+        parts.append(f'<rect x="18" y="{y + 8}" width="424" height="6" rx="3" fill="#21262d"/>')
+        parts.append(f'<rect x="18" y="{y + 8}" width="{424 * value / 100:.1f}" height="6" rx="3" fill="url(#accent)"/>')
+    return _svg_footer(parts)
+
 def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: Dict[str, Dict[str, int]]) -> Dict[str, int]:
     """Sum language bytes across repositories."""
     total: Counter[str] = Counter()
@@ -977,6 +1103,10 @@ def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
         "release_health": release_health(user, repos, lang=lang),
         "docs_pulse": docs_pulse(user, repos, lang=lang),
         "sentiment": community_sentiment(user, repos, lang=lang),
+        "velocity": velocity_snapshot(user, repos, lang=lang),
+        "stability": stability_radar(user, repos, lang=lang),
+        "dependencies": dependency_graph(user, repos, lang=lang),
+        "quality_gates": quality_gates(user, repos, lang=lang),
     }
 
 
@@ -1065,7 +1195,9 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
         "growth growth"
         "issue_aging review_load"
         "release_health release_health"
-        "docs_pulse sentiment";
+        "docs_pulse sentiment"
+        "velocity stability"
+        "dependencies quality_gates";
     }}
     .card {{ min-width: 0; }}
     .card:nth-child(1) {{ grid-area: profile; }}
@@ -1091,6 +1223,10 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     .card:nth-child(21) {{ grid-area: release_health; }}
     .card:nth-child(22) {{ grid-area: docs_pulse; }}
     .card:nth-child(23) {{ grid-area: sentiment; }}
+    .card:nth-child(24) {{ grid-area: velocity; }}
+    .card:nth-child(25) {{ grid-area: stability; }}
+    .card:nth-child(26) {{ grid-area: dependencies; }}
+    .card:nth-child(27) {{ grid-area: quality_gates; }}
     footer {{ margin-top: 18px; color: #6e7681; font-size: 12px; line-height: 1.6; }}
     @media (max-width: 900px) {{
       body {{ padding: 24px 16px 40px; }}
@@ -1132,6 +1268,10 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       {card("release_health", "release_health_section", "RELEASE", wide=True)}
       {card("docs_pulse", "docs_pulse_section", "DOCS")}
       {card("sentiment", "community_sentiment_section", "SENTIMENT")}
+      {card("velocity", "velocity_section", "VELOCITY")}
+      {card("stability", "stability_section", "STABLE")}
+      {card("dependencies", "dependency_section", "DEPEND")}
+      {card("quality_gates", "quality_gate_section", "GATES")}
     </section>
     <footer>{escape(t("preview_footer", lang))}</footer>
   </main>
