@@ -1,0 +1,16 @@
+[project]
+name = "createchart"
+version = "0.1.0"
+description = "Generate GitHub profile and repository statistic charts as SVG"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.31.0",
+]
+
+[project.scripts]
+createchart = "createchart.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
