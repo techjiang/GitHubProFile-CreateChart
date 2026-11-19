@@ -7,12 +7,13 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Profile overview card: followers, following, public repos, total stars
 - Top repositories bar chart by stars/forks/any numeric repo field
 - Language distribution stacked bar chart
+- Advanced cards: contribution activity heatmap, project momentum radar, and highlights card
 - Pure SVG output — no JavaScript, works in any GitHub README
 - Polished cards with contrast labels, rank badges, legend percentages, and value emphasis
 - Offline demo mode for previewing charts without GitHub API calls
 - Chinese and English labels via `--lang zh` / `--lang en`
 - Refined typography, spacing, card hover states, status badges and title dividers
-- Seven focused visual polish rounds with zh/en preview copy updates
+- Eight focused visual polish rounds with advanced insight cards and zh/en preview copy updates
 
 ## Install
 
@@ -32,6 +33,9 @@ Generated files:
 - `charts/profile.svg`
 - `charts/repos.svg`
 - `charts/languages.svg`
+- `charts/activity.svg`
+- `charts/momentum.svg`
+- `charts/highlights.svg`
 
 Embed in your profile README:
 
@@ -47,7 +51,7 @@ createchart octocat --repo-languages
 
 ## Preview
 
-Run the offline demo to generate three sample charts and a standalone preview page:
+Run the offline demo to generate six sample charts and a standalone preview page:
 
 ```bash
 createchart --demo --preview-html -o charts

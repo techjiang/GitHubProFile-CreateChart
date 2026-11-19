@@ -37,11 +37,11 @@ def test_aggregate_languages():
     assert result["Go"] == 2
 
 
-def test_demo_charts_returns_three_svg_files():
+def test_demo_charts_returns_six_svg_files():
     from createchart.charts import demo_charts
 
     charts = demo_charts()
-    assert set(charts) == {"profile", "repos", "languages"}
+    assert set(charts) == {"profile", "repos", "languages", "activity", "momentum", "highlights"}
     assert all(svg.startswith("<svg") and svg.endswith("</svg>") for svg in charts.values())
 
 
@@ -69,8 +69,8 @@ def test_english_labels_remain_default():
 
 def test_preview_polish_rounds_are_visible():
     html = preview_html(demo_charts(lang="zh"), lang="zh")
-    assert "第 7 轮" in html
-    assert "第 7 轮视觉打磨" in html
+    assert "第 8 轮" in html
+    assert "第 8 轮视觉打磨" in html
     assert "累计星标" in html
     assert "rgba(129, 140, 248, .78)" in html
 
@@ -95,3 +95,20 @@ def test_preview_status_badges_are_present():
     assert "SPLIT" in html
     assert "PingFang SC" in html
     assert "tabular-nums" in html
+
+
+def test_advanced_cards_are_rendered():
+    charts = demo_charts(lang="zh")
+    assert "贡献活跃度" in charts["activity"]
+    assert "项目 momentum" in charts["momentum"]
+    assert "高光时刻" in charts["highlights"]
+    assert "peak" not in charts["activity"].lower()
+
+
+def test_preview_includes_all_sections():
+    html = preview_html(demo_charts(lang="zh"), lang="zh")
+    for badge in ("PULSE", "TREND", "SPOTLIGHT"):
+        assert badge in html
+    assert "04 / 贡献活跃度" in html
+    assert "05 / 项目 Momentum" in html
+    assert "06 / 高光时刻" in html

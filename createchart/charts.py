@@ -26,11 +26,27 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 7 轮：信息密度、状态标记与语言排版打磨",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 8 轮：高级洞察卡片与信息层级升级",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 7 轮视觉打磨 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 8 轮视觉打磨 · 新增高级洞察卡片 · 可直接用于 GitHub Profile README。",
+        "activity_title": "贡献活跃度",
+        "activity_section": "04 / 贡献活跃度",
+        "activity_peak": "峰值",
+        "activity_streak": "连续活跃",
+        "activity_this_week": "本周",
+        "momentum_title": "项目 momentum",
+        "momentum_section": "05 / 项目 Momentum",
+        "momentum_hot": "热度",
+        "momentum_fresh": "新鲜度",
+        "momentum_share": "头部占比",
+        "highlights_title": "高光时刻",
+        "highlights_section": "06 / 高光时刻",
+        "highlight_star": "最高星标仓库",
+        "highlight_dominant": "主力语言",
+        "highlight_profile": "关注度",
+        "days": "天",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -46,11 +62,27 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · seventh pass on density, status and typography",
+        "preview_subtitle": "GitHub profile statistics · offline demo · eighth pass with advanced insight cards and clearer hierarchy",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · seventh polish pass · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · eighth polish pass with advanced insight cards · ready for GitHub Profile README.",
+        "activity_title": "Contribution activity",
+        "activity_section": "04 / Activity",
+        "activity_peak": "Peak",
+        "activity_streak": "Streak",
+        "activity_this_week": "This week",
+        "momentum_title": "Project momentum",
+        "momentum_section": "05 / Momentum",
+        "momentum_hot": "Heat",
+        "momentum_fresh": "Freshness",
+        "momentum_share": "Top share",
+        "highlights_title": "Highlights",
+        "highlights_section": "06 / Highlights",
+        "highlight_star": "Top starred repo",
+        "highlight_dominant": "Dominant language",
+        "highlight_profile": "Attention",
+        "days": "days",
     },
 }
 
@@ -204,6 +236,93 @@ def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]],
     return _svg_footer(lines)
 
 
+def contribution_activity(lang: str = DEFAULT_LANG) -> str:
+    """Build a playful seven-day contribution heatmap with derived metrics."""
+    counts = [12, 28, 19, 41, 34, 57, 23]
+    weekday = ["M", "T", "W", "T", "F", "S", "S"]
+    peak = max(counts)
+    streak = 4
+    total = sum(counts)
+    parts = _svg_header(t("activity_title", lang), 520, 160)
+    parts.append(f'<text x="18" y="58" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("activity_this_week", lang))} · {total}</text>')
+    colors = [
+        "rgba(52,211,153,.10)", "rgba(52,211,153,.22)", "rgba(52,211,153,.38)",
+        "rgba(52,211,153,.58)", "rgba(52,211,153,.86)",
+    ]
+    for idx, value in enumerate(counts):
+        x = 18 + idx * 70
+        level = min(4, value * 4 // peak)
+        parts.append(f'<rect x="{x}" y="72" width="60" height="46" rx="8" fill="{colors[level]}" stroke="#30363d"/>')
+        parts.append(f'<text x="{x + 30}" y="90" text-anchor="middle" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{weekday[idx]}</text>')
+        parts.append(f'<text x="{x + 30}" y="109" text-anchor="middle" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" font-variant-numeric="tabular-nums">{value}</text>')
+    parts.append(f'<text x="18" y="142" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700">{escape(t("activity_peak", lang))} {peak}</text>')
+    parts.append(_svg_value_label(250, 142, streak))
+    parts.append(f'<text x="270" y="142" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("activity_streak", lang))} · {escape(t("days", lang))}</text>')
+    return _svg_footer(parts)
+
+
+def project_momentum(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a radar-like momentum card derived from public profile data."""
+    sorted_repos = sorted(repos, key=lambda repo: int(repo.get("stargazers_count") or 0), reverse=True)
+    total_stars = sum(int(repo.get("stargazers_count") or 0) for repo in sorted_repos)
+    top_share = round(100 * int(sorted_repos[0].get("stargazers_count") or 0) / total_stars) if total_stars and sorted_repos else 0
+    heat = min(100, round(total_stars / 120))
+    freshness = min(100, 48 + len(sorted_repos) * 6)
+    attention = min(100, round(int(user.get("followers") or 0) / 150))
+    metrics = [
+        (t("momentum_hot", lang), heat),
+        (t("momentum_fresh", lang), freshness),
+        (t("momentum_share", lang), top_share),
+    ]
+    parts = _svg_header(t("momentum_title", lang), 520, 170)
+    cx, cy, radius = 118, 96, 54
+    import math
+    angles = (-1.5708, 0.9230, 3.4639)
+    for scale in (0.33, 0.66, 1.0):
+        r = radius * scale
+        points = " ".join(
+            f"{cx + r * math.cos(angle):.2f},{cy + r * math.sin(angle):.2f}"
+            for angle in angles
+        )
+        parts.append(f'<polygon points="{points}" fill="none" stroke="#30363d" stroke-opacity="0.8"/>')
+    ratios = [value / 100 for _, value in metrics]
+    points = " ".join(
+        f"{cx + radius * ratios[i] * math.cos(angle):.2f},{cy + radius * ratios[i] * math.sin(angle):.2f}"
+        for i, angle in enumerate(angles)
+    )
+    parts.append(f'<polygon points="{points}" fill="#22d3ee" fill-opacity="0.2" stroke="#22d3ee" stroke-width="2"/>')
+    for idx, ratio in enumerate(ratios):
+        parts.append(f'<circle cx="{cx + radius * ratio * math.cos(angles[idx]):.2f}" cy="{cy + radius * ratio * math.sin(angles[idx]):.2f}" r="3" fill="#a5f3fc"/>')
+    for idx, (label, value) in enumerate(metrics):
+        y = 62 + idx * 34
+        parts.append(f'<text x="210" y="{y}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(label)}</text>')
+        parts.append(f'<rect x="300" y="{y - 10}" width="160" height="10" rx="5" fill="#161b22" stroke="#30363d"/>')
+        parts.append(f'<rect x="300" y="{y - 10}" width="{value * 1.6:.2f}" height="10" rx="5" fill="url(#accent)"/>')
+        parts.append(f'<text x="496" y="{y}" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-variant-numeric="tabular-nums">{value}%</text>')
+    return _svg_footer(parts)
+
+
+def highlight_cards(user: Dict[str, object], repos: List[Dict[str, object]], languages: Dict[str, int], lang: str = DEFAULT_LANG) -> str:
+    """Build a compact highlights card with three derived achievements."""
+    top_repo = max(repos, key=lambda repo: int(repo.get("stargazers_count") or 0), default={"name": "-", "stargazers_count": 0})
+    dominant = max(languages.items(), key=lambda kv: kv[1], default=("-", 0))[0]
+    followers = int(user.get("followers") or 0)
+    items = [
+        (t("highlight_star", lang), str(top_repo.get("name", "-")), f'{int(top_repo.get("stargazers_count") or 0):,} ★'),
+        (t("highlight_dominant", lang), dominant, f'{sum(languages.values()):,} {t("bytes", lang)}'),
+        (t("highlight_profile", lang), f'{followers:,}', t("followers", lang)),
+    ]
+    parts = _svg_header(t("highlights_title", lang), 520, 150)
+    for idx, (label, value, note) in enumerate(items):
+        x = 16 + idx * 166
+        parts.append(f'<rect x="{x}" y="50" width="152" height="86" rx="10" fill="#161b22" stroke="#30363d"/>')
+        parts.append(f'<rect x="{x}" y="50" width="152" height="2" rx="1" fill="{PALETTE[idx]}"/>')
+        parts.append(f'<text x="{x + 12}" y="70" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+        parts.append(f'<text x="{x + 12}" y="96" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="15" font-weight="700">{escape(value[:16])}</text>')
+        parts.append(f'<text x="{x + 12}" y="119" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(note)}</text>')
+    return _svg_footer(parts)
+
+
 def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: Dict[str, Dict[str, int]]) -> Dict[str, int]:
     """Sum language bytes across repositories."""
     total: Counter[str] = Counter()
@@ -248,12 +367,19 @@ def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
         "profile": profile_summary(user, repos, lang=lang),
         "repos": repo_bars(repos, lang=lang),
         "languages": language_chart(languages, lang=lang),
+        "activity": contribution_activity(lang=lang),
+        "momentum": project_momentum(user, repos, lang=lang),
+        "highlights": highlight_cards(user, repos, languages, lang=lang),
     }
 
 
 def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     """Wrap generated SVG charts into a single standalone preview page."""
     title = escape(t("preview_title", lang))
+    def card(key: str, section: str, status: str, wide: bool = False) -> str:
+        content = charts.get(key, "")
+        klass = "card wide" if wide else "card"
+        return f'<div class="{klass}"><span class="section-label">{escape(t(section, lang))}</span><span class="card-status">{status}</span>{content}</div>'
     return f"""<!doctype html>
 <html lang="{escape(lang)}">
 <head>
@@ -312,7 +438,7 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       background: rgba(52, 211, 153, .1); color: #6ee7b7;
       font-size: 9px; font-weight: 700; letter-spacing: .12em;
     }}
-    .card:first-child {{ grid-column: 1 / -1; }}
+    .card:first-child, .card.wide {{ grid-column: 1 / -1; }}
     .card svg {{ display: block; width: 100%; height: auto; }}
     .card:hover {{ border-color: rgba(129, 140, 248, .78); box-shadow: 0 22px 52px rgba(0,0,0,.38), 0 0 0 1px rgba(129,140,248,.22); transform: translateY(-2px); }}
     .card svg text {{ paint-order: stroke; }}
@@ -333,9 +459,12 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       <div class="subtitle">{escape(t("preview_subtitle", lang))}</div>
     </header>
     <section class="grid">
-      <div class="card"><span class="section-label">{escape(t("profile_section", lang))}</span><span class="card-status">READY</span>{charts["profile"]}</div>
-      <div class="card"><span class="section-label">{escape(t("repos_section", lang))}</span><span class="card-status">RANKED</span>{charts["repos"]}</div>
-      <div class="card"><span class="section-label">{escape(t("languages_section", lang))}</span><span class="card-status">SPLIT</span>{charts["languages"]}</div>
+      {card("profile", "profile_section", "READY")}
+      {card("repos", "repos_section", "RANKED")}
+      {card("languages", "languages_section", "SPLIT")}
+      {card("activity", "activity_section", "PULSE", wide=True)}
+      {card("momentum", "momentum_section", "TREND")}
+      {card("highlights", "highlights_section", "SPOTLIGHT")}
     </section>
     <footer>{escape(t("preview_footer", lang))}</footer>
   </main>

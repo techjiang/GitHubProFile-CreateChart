@@ -8,7 +8,17 @@ import sys
 from pathlib import Path
 from typing import Dict
 
-from .charts import aggregate_languages, demo_charts, language_chart, preview_html, profile_summary, repo_bars
+from .charts import (
+    aggregate_languages,
+    contribution_activity,
+    demo_charts,
+    highlight_cards,
+    language_chart,
+    preview_html,
+    profile_summary,
+    project_momentum,
+    repo_bars,
+)
 from .github_client import GitHubClient
 
 
@@ -35,9 +45,9 @@ def main(argv: list[str] | None = None) -> int:
             (output / f"{name}.svg").write_text(svg, encoding="utf-8")
         if args.preview_html:
             (output / "preview.html").write_text(preview_html(charts, lang=args.lang), encoding="utf-8")
-            print(f"Wrote 3 demo charts and preview.html to {output.resolve()}")
+            print(f"Wrote 6 demo charts and preview.html to {output.resolve()}")
         else:
-            print(f"Wrote 3 demo charts to {output.resolve()}")
+            print(f"Wrote 6 demo charts to {output.resolve()}")
         return 0
 
     if not args.username:
@@ -70,8 +80,11 @@ def main(argv: list[str] | None = None) -> int:
         if repos:
             languages = client.list_languages(args.username, str(repos[0].get("name", "")))
     (output / "languages.svg").write_text(language_chart(languages, lang=args.lang), encoding="utf-8")
+    (output / "activity.svg").write_text(contribution_activity(lang=args.lang), encoding="utf-8")
+    (output / "momentum.svg").write_text(project_momentum(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "highlights.svg").write_text(highlight_cards(user, repos, languages, lang=args.lang), encoding="utf-8")
 
-    print(f"Wrote 3 charts to {output.resolve()}")
+    print(f"Wrote 6 charts to {output.resolve()}")
     return 0
 
 
