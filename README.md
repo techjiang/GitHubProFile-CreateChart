@@ -11,8 +11,8 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Polished cards with contrast labels, rank badges, legend percentages, and value emphasis
 - Offline demo mode for previewing charts without GitHub API calls
 - Chinese and English labels via `--lang zh` / `--lang en`
-- Refined typography, spacing, card hover states and title dividers
-- Six focused visual polish rounds with zh/en preview copy updates
+- Refined typography, spacing, card hover states, status badges and title dividers
+- Seven focused visual polish rounds with zh/en preview copy updates
 
 ## Install
 
