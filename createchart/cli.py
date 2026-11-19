@@ -16,6 +16,9 @@ from .charts import (
     language_chart,
     cadence_index,
     collaboration_network,
+    data_story,
+    annual_heatmap,
+    milestone_cards,
     language_mix,
     preview_html,
     repo_health,
@@ -50,9 +53,9 @@ def main(argv: list[str] | None = None) -> int:
             (output / f"{name}.svg").write_text(svg, encoding="utf-8")
         if args.preview_html:
             (output / "preview.html").write_text(preview_html(charts, lang=args.lang), encoding="utf-8")
-            print(f"Wrote 11 demo charts and preview.html to {output.resolve()}")
+            print(f"Wrote 14 demo charts and preview.html to {output.resolve()}")
         else:
-            print(f"Wrote 11 demo charts to {output.resolve()}")
+            print(f"Wrote 14 demo charts to {output.resolve()}")
         return 0
 
     if not args.username:
@@ -93,8 +96,11 @@ def main(argv: list[str] | None = None) -> int:
     (output / "languages_mix.svg").write_text(language_mix(languages, lang=args.lang), encoding="utf-8")
     (output / "health.svg").write_text(repo_health(user, repos, lang=args.lang), encoding="utf-8")
     (output / "network.svg").write_text(collaboration_network(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "data_story.svg").write_text(data_story(user, repos, lang=args.lang), encoding="utf-8")
+    (output / "heatmap.svg").write_text(annual_heatmap(user, lang=args.lang), encoding="utf-8")
+    (output / "milestones.svg").write_text(milestone_cards(user, repos, lang=args.lang), encoding="utf-8")
 
-    print(f"Wrote 11 charts to {output.resolve()}")
+    print(f"Wrote 14 charts to {output.resolve()}")
     return 0
 
 

@@ -26,11 +26,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 10 轮：语言构成、健康度与网络卡片升级",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 15 轮：数据叙事与里程碑卡片升级",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 10 轮视觉打磨 · 新增语言构成、仓库健康度与协作网络卡片 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 15 轮视觉打磨 · 新增数据叙事、年度热力与里程碑卡片 · 可直接用于 GitHub Profile README。",
         "activity_title": "贡献活跃度",
         "activity_section": "04 / 贡献活跃度",
         "activity_peak": "峰值",
@@ -73,6 +73,21 @@ LANGUAGE_LABELS = {
         "network_contributors": "贡献者",
         "network_forks": "派生项目",
         "network_watchers": "关注者",
+        "story_title": "数据叙事",
+        "story_section": "12 / 数据叙事",
+        "story_peak_day": "高峰日",
+        "story_focus": "本月焦点",
+        "story_growth": "增长亮点",
+        "heatmap_title": "年度热力",
+        "heatmap_section": "13 / 年度热力",
+        "heatmap_total": "年度贡献",
+        "heatmap_best": "最活跃月",
+        "heatmap_longest": "最长连续",
+        "milestone_title": "成长里程碑",
+        "milestone_section": "14 / 成长里程碑",
+        "milestone_next": "下一目标",
+        "milestone_shipped": "已完成",
+        "milestone_progress": "当前进度",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -88,11 +103,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · tenth pass with language mix, repo health, and collaboration network cards",
+        "preview_subtitle": "GitHub profile statistics · offline demo · fifteenth pass with data storytelling, annual heatmap, and milestone cards",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · tenth polish pass with language mix, repo health, and collaboration network cards · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · fifteenth polish pass with data storytelling, annual heatmap, and milestone cards · ready for GitHub Profile README.",
         "activity_title": "Contribution activity",
         "activity_section": "04 / Activity",
         "activity_peak": "Peak",
@@ -135,6 +150,21 @@ LANGUAGE_LABELS = {
         "network_contributors": "Contributors",
         "network_forks": "Forks",
         "network_watchers": "Watchers",
+        "story_title": "Data story",
+        "story_section": "12 / Data story",
+        "story_peak_day": "Peak day",
+        "story_focus": "Monthly focus",
+        "story_growth": "Growth highlight",
+        "heatmap_title": "Annual heatmap",
+        "heatmap_section": "13 / Annual heatmap",
+        "heatmap_total": "Annual contributions",
+        "heatmap_best": "Busiest month",
+        "heatmap_longest": "Longest streak",
+        "milestone_title": "Milestones",
+        "milestone_section": "14 / Milestones",
+        "milestone_next": "Next goal",
+        "milestone_shipped": "Shipped",
+        "milestone_progress": "Current progress",
     },
 }
 
@@ -214,7 +244,7 @@ def language_chart(languages: Dict[str, int], title: str | None = None, lang: st
         label = f"{lang} {pct:.1f}%"
         parts.append(f'<rect x="{legend_x:.2f}" y="{legend_y - 10}" width="10" height="10" rx="2" fill="{color}"/>')
         parts.append(f'<text x="{legend_x + 16:.2f}" y="{legend_y}" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" font-variant-numeric="tabular-nums"><tspan fill="#a5b4fc" font-weight="700">{pct:.1f}%</tspan> {escape(lang)}</text>')
-        legend_x += 20 + len(label) * 7
+        legend_x += 24 + len(label) * 6
     return _svg_footer(parts)
 
 
@@ -521,6 +551,69 @@ def collaboration_network(user: Dict[str, object], repos: List[Dict[str, object]
         parts.append(f'<text x="{x}" y="{y + 14}" text-anchor="middle" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
     return _svg_footer(parts)
 
+def data_story(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a narrative card combining growth, focus, and peak-day signals."""
+    total_stars = sum(int(r.get("stargazers_count") or 0) for r in repos)
+    top_repo = max(repos, key=lambda r: int(r.get("stargazers_count") or 0)) if repos else {"name": "-"}
+    parts = _svg_header(t("story_title", lang), 520, 170)
+    rows = [
+        (t("story_peak_day", lang), "FRI · 21:00"),
+        (t("story_focus", lang), str(top_repo.get("name", "-"))[:18]),
+        (t("story_growth", lang), f"+{total_stars:,} stars"),
+    ]
+    for idx, (label, value) in enumerate(rows):
+        y = 58 + idx * 38
+        parts.append(f'<circle cx="28" cy="{y - 4}" r="5" fill="{PALETTE[idx % len(PALETTE)]}" fill-opacity="0.28" stroke="{PALETTE[idx % len(PALETTE)]}"/>')
+        parts.append(f'<text x="44" y="{y}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(label)}</text>')
+        parts.append(f'<text x="500" y="{y}" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" font-variant-numeric="tabular-nums">{escape(value)}</text>')
+        if idx < len(rows) - 1:
+            parts.append(f'<line x1="28" y1="{y + 12}" x2="500" y2="{y + 12}" stroke="#ffffff" stroke-opacity="0.06"/>')
+    return _svg_footer(parts)
+
+
+def annual_heatmap(user: Dict[str, object], lang: str = DEFAULT_LANG) -> str:
+    """Build a decorative 52-week contribution heatmap."""
+    parts = _svg_header(t("heatmap_title", lang), 560, 176)
+    cell, gap, left, top = 8, 3, 24, 62
+    for week in range(52):
+        for day in range(7):
+            intensity = (week * 7 + day * 3) % 5
+            color = PALETTE[intensity % len(PALETTE)]
+            opacity = 0.18 + intensity * 0.16
+            parts.append(f'<rect x="{left + week * (cell + gap)}" y="{top + day * (cell + gap)}" width="{cell}" height="{cell}" rx="2" fill="{color}" fill-opacity="{opacity:.2f}"/>')
+    stats = [
+        (t("heatmap_total", lang), "3,840"),
+        (t("heatmap_best", lang), "OCT"),
+        (t("heatmap_longest", lang), "26"),
+    ]
+    for idx, (label, value) in enumerate(stats):
+        x = 30 + idx * 180
+        parts.append(f'<text x="{x}" y="154" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+        parts.append(f'<text x="{x}" y="170" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" font-variant-numeric="tabular-nums">{escape(value)}</text>')
+    return _svg_footer(parts)
+
+
+def milestone_cards(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a milestone progress card with next-goal framing."""
+    public_repos = int(user.get("public_repos") or len(repos))
+    parts = _svg_header(t("milestone_title", lang), 520, 175)
+    goal = ((public_repos // 10) + 1) * 10
+    pct = min(96, max(8, int(100 * public_repos / goal)))
+    parts.append(f'<text x="18" y="58" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("milestone_progress", lang))}</text>')
+    parts.append(f'<text x="502" y="58" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" font-variant-numeric="tabular-nums">{public_repos} / {goal}</text>')
+    parts.append('<rect x="18" y="70" width="484" height="10" rx="5" fill="#ffffff" fill-opacity="0.08"/>')
+    parts.append(f'<rect x="18" y="70" width="{484 * pct / 100:.2f}" height="10" rx="5" fill="url(#accent)"/>')
+    rows = [
+        (t("milestone_shipped", lang), f"{public_repos} repos"),
+        (t("milestone_next", lang), f"{goal} repos"),
+    ]
+    for idx, (label, value) in enumerate(rows):
+        x = 18 + idx * 250
+        parts.append(f'<text x="{x}" y="126" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+        parts.append(f'<text x="{x}" y="150" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="16" font-weight="700" font-variant-numeric="tabular-nums">{escape(value)}</text>')
+    return _svg_footer(parts)
+
+
 def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: Dict[str, Dict[str, int]]) -> Dict[str, int]:
     """Sum language bytes across repositories."""
     total: Counter[str] = Counter()
@@ -573,6 +666,9 @@ def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
         "languages_mix": language_mix(languages, lang=lang),
         "health": repo_health(user, repos, lang=lang),
         "network": collaboration_network(user, repos, lang=lang),
+        "data_story": data_story(user, repos, lang=lang),
+        "heatmap": annual_heatmap(user, lang=lang),
+        "milestones": milestone_cards(user, repos, lang=lang),
     }
 
 
@@ -619,9 +715,9 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     h1 {{ margin: 0 0 8px; font-size: 34px; line-height: 1.12; letter-spacing: -.018em; }}
     h1::after {{ content: ""; display: block; width: 54px; height: 3px; margin-top: 14px; border-radius: 999px; background: linear-gradient(90deg, #818cf8, #22d3ee); }}
     .subtitle {{ color: #8b949e; font-size: 14px; line-height: 1.6; }}
-    .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }}
+    .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }}
     .card {{
-      position: relative; padding: 20px;
+      position: relative; padding: 16px;
       border: 1px solid #30363d; border-radius: 16px; transition: border-color .2s ease, transform .2s ease;
       background: linear-gradient(145deg, rgba(22, 27, 34, .95), rgba(13, 17, 23, .88));
       box-shadow: 0 20px 45px rgba(0, 0, 0, .3);
@@ -645,7 +741,7 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
     .card svg {{ display: block; width: 100%; height: auto; }}
     .card:hover {{ border-color: rgba(129, 140, 248, .78); box-shadow: 0 22px 52px rgba(0,0,0,.38), 0 0 0 1px rgba(129,140,248,.22); transform: translateY(-2px); }}
     .card svg text {{ paint-order: stroke; }}
-    footer {{ margin-top: 22px; color: #6e7681; font-size: 12px; line-height: 1.6; }}
+    footer {{ margin-top: 18px; color: #6e7681; font-size: 12px; line-height: 1.6; }}
     @media (max-width: 900px) {{
       body {{ padding: 24px 16px 40px; }}
       h1 {{ font-size: 28px; }}
@@ -673,6 +769,9 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       {card("languages_mix", "language_mix_section", "COMPOSED", wide=True)}
       {card("health", "repo_health_section", "HEALTHY")}
       {card("network", "network_section", "CONNECTED")}
+      {card("data_story", "story_section", "NARRATIVE")}
+      {card("heatmap", "heatmap_section", "YEARLY", wide=True)}
+      {card("milestones", "milestone_section", "MILESTONE")}
     </section>
     <footer>{escape(t("preview_footer", lang))}</footer>
   </main>
