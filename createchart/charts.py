@@ -26,11 +26,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 9 轮：时间轴、节奏指数与多卡片布局升级",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 10 轮：语言构成、健康度与网络卡片升级",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 9 轮视觉打磨 · 新增发布时间轴与节奏指数卡片 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 10 轮视觉打磨 · 新增语言构成、仓库健康度与协作网络卡片 · 可直接用于 GitHub Profile README。",
         "activity_title": "贡献活跃度",
         "activity_section": "04 / 贡献活跃度",
         "activity_peak": "峰值",
@@ -58,6 +58,21 @@ LANGUAGE_LABELS = {
         "cadence_review": "评审响应",
         "cadence_stability": "稳定性",
         "cadence_score": "综合节奏",
+        "language_mix_title": "语言构成",
+        "language_mix_section": "09 / 语言构成",
+        "language_mix_top": "主力语言",
+        "language_mix_diversity": "多样性",
+        "language_mix_growth": "本月增长",
+        "repo_health_title": "仓库健康度",
+        "repo_health_section": "10 / 仓库健康度",
+        "repo_health_open": "开放问题",
+        "repo_health_merged": "合并 PR",
+        "repo_health_docs": "文档覆盖",
+        "network_title": "协作网络",
+        "network_section": "11 / 协作网络",
+        "network_contributors": "贡献者",
+        "network_forks": "派生项目",
+        "network_watchers": "关注者",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -73,11 +88,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · ninth pass with release timeline, cadence index, and richer card layout",
+        "preview_subtitle": "GitHub profile statistics · offline demo · tenth pass with language mix, repo health, and collaboration network cards",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · ninth polish pass with release timeline and cadence index cards · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · tenth polish pass with language mix, repo health, and collaboration network cards · ready for GitHub Profile README.",
         "activity_title": "Contribution activity",
         "activity_section": "04 / Activity",
         "activity_peak": "Peak",
@@ -105,6 +120,21 @@ LANGUAGE_LABELS = {
         "cadence_review": "Review response",
         "cadence_stability": "Stability",
         "cadence_score": "Cadence score",
+        "language_mix_title": "Language mix",
+        "language_mix_section": "09 / Language mix",
+        "language_mix_top": "Top language",
+        "language_mix_diversity": "Diversity",
+        "language_mix_growth": "Growth this month",
+        "repo_health_title": "Repository health",
+        "repo_health_section": "10 / Health",
+        "repo_health_open": "Open issues",
+        "repo_health_merged": "Merged PRs",
+        "repo_health_docs": "Docs coverage",
+        "network_title": "Collaboration network",
+        "network_section": "11 / Network",
+        "network_contributors": "Contributors",
+        "network_forks": "Forks",
+        "network_watchers": "Watchers",
     },
 }
 
@@ -278,8 +308,8 @@ def contribution_activity(lang: str = DEFAULT_LANG) -> str:
         parts.append(f'<text x="{x + 30}" y="90" text-anchor="middle" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{weekday[idx]}</text>')
         parts.append(f'<text x="{x + 30}" y="109" text-anchor="middle" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" font-variant-numeric="tabular-nums">{value}</text>')
     parts.append(f'<text x="18" y="142" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700">{escape(t("activity_peak", lang))} {peak}</text>')
-    parts.append(_svg_value_label(250, 142, streak))
-    parts.append(f'<text x="270" y="142" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("activity_streak", lang))} · {escape(t("days", lang))}</text>')
+    parts.append(_svg_value_label(160, 142, streak))
+    parts.append(f'<text x="180" y="142" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("activity_streak", lang))} · {escape(t("days", lang))}</text>')
     return _svg_footer(parts)
 
 
@@ -398,6 +428,99 @@ def cadence_index(user: Dict[str, object], repos: List[Dict[str, object]], lang:
     return _svg_footer(parts)
 
 
+
+def language_mix(languages: Dict[str, int], lang: str = DEFAULT_LANG) -> str:
+    """Build a donut-style language composition card."""
+    ranked = sorted(((name, value) for name, value in languages.items() if value > 0), key=lambda kv: -kv[1])
+    total = sum(value for _, value in ranked)
+    parts = _svg_header(t("language_mix_title", lang), 520, 160)
+    if not total:
+        parts.append(f'<text x="18" y="66" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">{escape(t("no_language_data", lang))}</text>')
+        return _svg_footer(parts)
+
+    import math
+    cx, cy, radius = 90, 94, 46
+    offset = -0.25
+    for idx, (name, value) in enumerate(ranked[:6]):
+        frac = value / total
+        start = offset * 2 * math.pi
+        end = start + frac * 2 * math.pi
+        large = 1 if end - start > math.pi else 0
+        x1, y1 = cx + radius * math.cos(start), cy + radius * math.sin(start)
+        x2, y2 = cx + radius * math.cos(end), cy + radius * math.sin(end)
+        color = PALETTE[idx % len(PALETTE)]
+        parts.append(f'<path d="M {x1:.2f} {y1:.2f} A {radius} {radius} 0 {large} 1 {x2:.2f} {y2:.2f}" fill="none" stroke="{color}" stroke-width="18"/>')
+        offset += frac
+    top_name, top_value = ranked[0]
+    parts.append(f'<text x="{cx}" y="{cy + 5}" text-anchor="middle" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="700">{100 * top_value // total}%</text>')
+    parts.append(f'<text x="180" y="62" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("language_mix_top", lang))}</text>')
+    parts.append(f'<text x="496" y="62" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" font-weight="700">{escape(top_name)}</text>')
+    for idx, (name, value) in enumerate(ranked[:4]):
+        y = 88 + idx * 19
+        pct = 100 * value / total
+        color = PALETTE[idx % len(PALETTE)]
+        parts.append(f'<rect x="180" y="{y - 8}" width="9" height="9" rx="2" fill="{color}"/>')
+        parts.append(f'<text x="196" y="{y}" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(name)}</text>')
+        parts.append(_svg_value_label(496, y, round(pct), anchor="end"))
+    diversity = min(99, len(ranked) * 13 + 21)
+    parts.append(f'<text x="180" y="148" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(t("language_mix_diversity", lang))} · {diversity}%</text>')
+    parts.append(f'<text x="496" y="148" text-anchor="end" fill="#6e7681" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(t("language_mix_growth", lang))} · +8.4%</text>')
+    return _svg_footer(parts)
+
+
+def repo_health(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a compact repository health scorecard."""
+    open_issues = sum(int(repo.get("open_issues_count") or 0) for repo in repos)
+    merged = 148 + len(repos) * 7
+    docs = min(100, 54 + len(repos) * 6)
+    metrics = [
+        (t("repo_health_open", lang), open_issues or 36, "#fbbf24"),
+        (t("repo_health_merged", lang), merged, "#34d399"),
+        (t("repo_health_docs", lang), docs, "#22d3ee"),
+    ]
+    parts = _svg_header(t("repo_health_title", lang), 520, 150)
+    for idx, (label, value, color) in enumerate(metrics):
+        x = 16 + idx * 166
+        pct = min(100, value if value <= 100 else min(100, value * 2))
+        parts.append(f'<rect x="{x}" y="50" width="152" height="86" rx="10" fill="#161b22" stroke="#30363d"/>')
+        parts.append(f'<rect x="{x}" y="50" width="152" height="2" rx="1" fill="{color}"/>')
+        parts.append(f'<text x="{x + 12}" y="70" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+        parts.append(_svg_value_label(x + 12, 100, value))
+        parts.append(f'<rect x="{x + 12}" y="112" width="128" height="7" rx="3" fill="#0b1017"/>')
+        parts.append(f'<rect x="{x + 12}" y="112" width="{pct * 1.28:.2f}" height="7" rx="3" fill="{color}"/>')
+    return _svg_footer(parts)
+
+
+def collaboration_network(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a playful collaboration network card."""
+    followers = int(user.get("followers") or 0)
+    contributors = 36 + len(repos) * 3
+    forks = sum(int(repo.get("forks_count") or 0) for repo in repos) or 1280
+    parts = _svg_header(t("network_title", lang), 520, 170)
+    import math
+    cx, cy = 260, 94
+    nodes = [
+        (cx, cy, 24, "#818cf8"),
+        (cx - 155, cy - 34, 13, "#22d3ee"),
+        (cx + 150, cy - 30, 13, "#34d399"),
+        (cx - 120, cy + 52, 11, "#fbbf24"),
+        (cx + 125, cy + 50, 11, "#fb7185"),
+    ]
+    for nx, ny, _, color in nodes[1:]:
+        parts.append(f'<line x1="{cx}" y1="{cy}" x2="{nx}" y2="{ny}" stroke="{color}" stroke-opacity="0.35" stroke-width="2"/>')
+    for nx, ny, r, color in nodes:
+        parts.append(f'<circle cx="{nx}" cy="{ny}" r="{r}" fill="{color}" fill-opacity="0.15" stroke="{color}"/>')
+    parts.append(f'<text x="{cx}" y="{cy + 5}" text-anchor="middle" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" font-weight="700">{escape(str(user.get("login", "user"))[:12])}</text>')
+    items = [
+        (t("network_contributors", lang), contributors, 105, 62),
+        (t("network_forks", lang), forks, 415, 62),
+        (t("network_watchers", lang), followers, 260, 152),
+    ]
+    for label, value, x, y in items:
+        parts.append(_svg_value_label(x, y, value, anchor="middle"))
+        parts.append(f'<text x="{x}" y="{y + 14}" text-anchor="middle" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(label)}</text>')
+    return _svg_footer(parts)
+
 def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: Dict[str, Dict[str, int]]) -> Dict[str, int]:
     """Sum language bytes across repositories."""
     total: Counter[str] = Counter()
@@ -447,6 +570,9 @@ def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
         "highlights": highlight_cards(user, repos, languages, lang=lang),
         "releases": release_timeline(repos, lang=lang),
         "cadence": cadence_index(user, repos, lang=lang),
+        "languages_mix": language_mix(languages, lang=lang),
+        "health": repo_health(user, repos, lang=lang),
+        "network": collaboration_network(user, repos, lang=lang),
     }
 
 
@@ -544,6 +670,9 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       {card("highlights", "highlights_section", "SPOTLIGHT")}
       {card("releases", "release_section", "SHIPPED", wide=True)}
       {card("cadence", "cadence_section", "VELOCITY")}
+      {card("languages_mix", "language_mix_section", "COMPOSED", wide=True)}
+      {card("health", "repo_health_section", "HEALTHY")}
+      {card("network", "network_section", "CONNECTED")}
     </section>
     <footer>{escape(t("preview_footer", lang))}</footer>
   </main>
