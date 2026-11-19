@@ -7,13 +7,13 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Profile overview card: followers, following, public repos, total stars
 - Top repositories bar chart by stars/forks/any numeric repo field
 - Language distribution stacked bar chart
-- Advanced cards: contribution activity heatmap, project momentum radar, highlights, release timeline, cadence index, language mix, repository health, collaboration network, data story, annual heatmap, and milestones
+- Advanced cards: contribution activity heatmap, project momentum radar, highlights, release timeline, cadence index, language mix, repository health, collaboration network, data story, annual heatmap, milestones, roadmap, community pulse, and code quality
 - Pure SVG output — no JavaScript, works in any GitHub README
 - Polished cards with contrast labels, rank badges, legend percentages, and value emphasis
 - Offline demo mode for previewing charts without GitHub API calls
 - Chinese and English labels via `--lang zh` / `--lang en`
 - Refined typography, spacing, card hover states, status badges and title dividers
-- Fifteen focused visual polish rounds with advanced insight cards, release/cadence views, language composition, repository health, collaboration network, data storytelling, annual heatmap, milestones, and zh/en preview copy updates
+- Sixteen focused visual polish rounds with advanced insight cards, release/cadence views, language composition, repository health, collaboration network, data storytelling, annual heatmap, milestones, roadmap, community pulse, code quality, and zh/en preview copy updates
 
 ## Install
 
@@ -44,6 +44,9 @@ Generated files:
 - `charts/data_story.svg`
 - `charts/heatmap.svg`
 - `charts/milestones.svg`
+- `charts/roadmap.svg`
+- `charts/community.svg`
+- `charts/quality.svg`
 
 Embed in your profile README:
 
@@ -59,7 +62,7 @@ createchart octocat --repo-languages
 
 ## Preview
 
-Run the offline demo to generate fourteen sample charts and a standalone preview page:
+Run the offline demo to generate seventeen sample charts and a standalone preview page:
 
 ```bash
 createchart --demo --preview-html -o charts
