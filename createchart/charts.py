@@ -27,6 +27,7 @@ def _svg_header(title: str, width: int, height: int) -> List[str]:
         '</defs>',
         f'<rect width="{width}" height="{height}" fill="url(#bg)" rx="12"/>',
         f'<rect x="0" y="0" width="4" height="{height}" fill="url(#accent)" rx="2"/>',
+        f'<rect x="0" y="0" width="{width}" height="1" fill="#ffffff" opacity="0.06"/>',
         f'<text x="16" y="28" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="700">{escape(title)}</text>',
     ]
 
@@ -51,7 +52,7 @@ def language_chart(languages: Dict[str, int], title: str = "Languages") -> str:
             continue
         segment = bar_width * value / total
         color = PALETTE[idx % len(PALETTE)]
-        parts.append(f'<rect x="{x:.2f}" y="44" width="{segment:.2f}" height="18" rx="3" fill="{color}"><title>{escape(lang)}: {value} bytes</title></rect>')
+        parts.append(f'<rect x="{x:.2f}" y="44" width="{segment:.2f}" height="18" rx="3" fill="{color}" stroke="#0d1117" stroke-width="0.6"><title>{escape(lang)}: {value} bytes</title></rect>')
         x += segment
 
     legend_x = 16.0
@@ -123,9 +124,9 @@ def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]])
     for idx, (label, value) in enumerate(stats):
         x = 16 + (idx % 2) * 252
         y = 62 + (idx // 2) * 52
-        lines.append(f'<text x="{x}" y="{y}" fill="#8b949e" font-family="sans-serif" font-size="12">{escape(label)}</text>')
+        lines.append(f'<text x="{x}" y="{y}" fill="#8b949e" font-family="sans-serif" font-size="11" letter-spacing="0.5">{escape(label).upper()}</text>')
         lines.append(f'<rect x="{x}" y="{y + 8}" width="220" height="34" rx="7" fill="#161b22" stroke="#30363d"/>')
-        lines.append(f'<text x="{x + 12}" y="{y + 31}" fill="#e6edf3" font-family="sans-serif" font-size="24" font-weight="700">{value}</text>')
+        lines.append(f'<text x="{x + 12}" y="{y + 31}" fill="#e6edf3" font-family="sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum">{value}</text>')
     return _svg_footer(lines)
 
 
@@ -156,8 +157,13 @@ def demo_data() -> Tuple[Dict[str, object], List[Dict[str, object]], Dict[str, i
         {"name": "hub", "stargazers_count": 3140},
         {"name": "gitignore", "stargazers_count": 2680},
         {"name": "git-consortium", "stargazers_count": 1490},
+        {"name": "createchart", "stargazers_count": 980},
+        {"name": "octokit.rb", "stargazers_count": 640},
     ]
-    languages = {"Python": 182000, "TypeScript": 96500, "Go": 54300, "Rust": 32100, "Shell": 12400}
+    languages = {
+        "Python": 182000, "TypeScript": 96500, "Go": 54300,
+        "Rust": 32100, "Shell": 12400, "HTML": 6800,
+    }
     return user, repos, languages
 
 
@@ -185,54 +191,44 @@ def preview_html(charts: Dict[str, str]) -> str:
     body {{
       margin: 0;
       min-height: 100vh;
-      padding: 36px 24px 56px;
+      padding: 40px 24px 56px;
       background:
-        radial-gradient(circle at 12% 4%, rgba(99, 102, 241, .32) 0, transparent 28%),
-        radial-gradient(circle at 88% 8%, rgba(6, 182, 212, .2) 0, transparent 26%),
-        radial-gradient(circle at 15% 0%, #1f2937 0, #0b0f16 48%, #07090d 100%);
+        radial-gradient(circle at 8% 0%, rgba(99, 102, 241, .28) 0, transparent 26%),
+        radial-gradient(circle at 92% 6%, rgba(6, 182, 212, .18) 0, transparent 24%),
+        linear-gradient(160deg, #111827 0%, #0b0f16 52%, #07090d 100%);
       color: #e6edf3;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }}
-    main {{ max-width: 1180px; margin: 0 auto; }}
-    header {{
-      margin-bottom: 28px;
-      padding: 2px 4px 22px;
-      border-bottom: 1px solid #30363d;
-    }}
+    main {{ max-width: 1160px; margin: 0 auto; }}
+    header {{ margin-bottom: 30px; padding: 0 4px 22px; border-bottom: 1px solid #30363d; }}
     .eyebrow {{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      padding: 5px 10px;
-      border: 1px solid rgba(99, 102, 241, .45);
-      border-radius: 999px;
-      background: rgba(99, 102, 241, .12);
-      color: #a5b4fc;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-bottom: 14px; padding: 5px 11px;
+      border: 1px solid rgba(99, 102, 241, .45); border-radius: 999px;
+      background: rgba(99, 102, 241, .12); color: #a5b4fc;
+      font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
     }}
-    .eyebrow::before {{ content: ""; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 4px rgba(52, 211, 153, .12); }}
+    .eyebrow::before {{
+      content: ""; width: 7px; height: 7px; border-radius: 50%;
+      background: #34d399; box-shadow: 0 0 0 4px rgba(52, 211, 153, .12);
+    }}
     h1 {{ margin: 0 0 8px; font-size: 34px; line-height: 1.12; letter-spacing: -.02em; }}
     .subtitle {{ color: #8b949e; font-size: 14px; line-height: 1.6; }}
     .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }}
     .card {{
-      position: relative;
-      padding: 20px;
-      border: 1px solid #30363d;
-      border-radius: 16px;
+      position: relative; padding: 20px;
+      border: 1px solid #30363d; border-radius: 16px;
       background: linear-gradient(145deg, rgba(22, 27, 34, .95), rgba(13, 17, 23, .88));
       box-shadow: 0 20px 45px rgba(0, 0, 0, .3);
       overflow: hidden;
     }}
     .card::before {{
-      content: "";
-      position: absolute;
-      inset: 0 0 auto;
-      height: 2px;
+      content: ""; position: absolute; inset: 0 0 auto; height: 2px;
       background: linear-gradient(90deg, #6366f1, #06b6d4, #10b981);
+    }}
+    .card .section-label {{
+      display: block; margin: 0 0 12px; color: #6e7681;
+      font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
     }}
     .card:first-child {{ grid-column: 1 / -1; }}
     .card svg {{ display: block; width: 100%; height: auto; }}
@@ -250,12 +246,12 @@ def preview_html(charts: Dict[str, str]) -> str:
     <header>
       <div class="eyebrow">Live SVG charts</div>
       <h1>CreateChart preview</h1>
-      <div class="subtitle">GitHub profile statistics · offline demo · responsive cards with a new accent treatment</div>
+      <div class="subtitle">GitHub profile statistics · offline demo · five rounds of visual polish</div>
     </header>
     <section class="grid">
-      <div class="card">{charts["profile"]}</div>
-      <div class="card">{charts["repos"]}</div>
-      <div class="card">{charts["languages"]}</div>
+      <div class="card"><span class="section-label">01 / Profile</span>{charts["profile"]}</div>
+      <div class="card"><span class="section-label">02 / Repositories</span>{charts["repos"]}</div>
+      <div class="card"><span class="section-label">03 / Languages</span>{charts["languages"]}</div>
     </section>
     <footer>Generated locally by CreateChart. SVG charts are ready for GitHub Profile README.</footer>
   </main>
