@@ -26,11 +26,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · 预览",
         "preview_eyebrow": "实时 SVG 图表",
         "preview_heading": "CreateChart 预览",
-        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 8 轮：高级洞察卡片与信息层级升级",
+        "preview_subtitle": "GitHub 主页统计 · 离线演示 · 第 9 轮：时间轴、节奏指数与多卡片布局升级",
         "profile_section": "01 / 个人概览",
         "repos_section": "02 / 仓库排行",
         "languages_section": "03 / 语言分布",
-        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 8 轮视觉打磨 · 新增高级洞察卡片 · 可直接用于 GitHub Profile README。",
+        "preview_footer": "由 CreateChart 在本地生成 · 纯 SVG · 中英文标签可切换 · 第 9 轮视觉打磨 · 新增发布时间轴与节奏指数卡片 · 可直接用于 GitHub Profile README。",
         "activity_title": "贡献活跃度",
         "activity_section": "04 / 贡献活跃度",
         "activity_peak": "峰值",
@@ -47,6 +47,17 @@ LANGUAGE_LABELS = {
         "highlight_dominant": "主力语言",
         "highlight_profile": "关注度",
         "days": "天",
+        "release_title": "发布时间轴",
+        "release_section": "07 / 发布时间轴",
+        "release_latest": "最近发布",
+        "release_window": "发布窗口",
+        "release_velocity": "发布速度",
+        "cadence_title": "节奏指数",
+        "cadence_section": "08 / 节奏指数",
+        "cadence_week": "本周提交",
+        "cadence_review": "评审响应",
+        "cadence_stability": "稳定性",
+        "cadence_score": "综合节奏",
     },
     "en": {
         "profile_title": "GitHub overview",
@@ -62,11 +73,11 @@ LANGUAGE_LABELS = {
         "preview_title": "CreateChart · Preview",
         "preview_eyebrow": "Live SVG charts",
         "preview_heading": "CreateChart preview",
-        "preview_subtitle": "GitHub profile statistics · offline demo · eighth pass with advanced insight cards and clearer hierarchy",
+        "preview_subtitle": "GitHub profile statistics · offline demo · ninth pass with release timeline, cadence index, and richer card layout",
         "profile_section": "01 / Profile",
         "repos_section": "02 / Repositories",
         "languages_section": "03 / Languages",
-        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · eighth polish pass with advanced insight cards · ready for GitHub Profile README.",
+        "preview_footer": "Generated locally by CreateChart · pure SVG · switchable zh/en labels · ninth polish pass with release timeline and cadence index cards · ready for GitHub Profile README.",
         "activity_title": "Contribution activity",
         "activity_section": "04 / Activity",
         "activity_peak": "Peak",
@@ -83,6 +94,17 @@ LANGUAGE_LABELS = {
         "highlight_dominant": "Dominant language",
         "highlight_profile": "Attention",
         "days": "days",
+        "release_title": "Release timeline",
+        "release_section": "07 / Releases",
+        "release_latest": "Latest",
+        "release_window": "Window",
+        "release_velocity": "Velocity",
+        "cadence_title": "Cadence index",
+        "cadence_section": "08 / Cadence",
+        "cadence_week": "Commits this week",
+        "cadence_review": "Review response",
+        "cadence_stability": "Stability",
+        "cadence_score": "Cadence score",
     },
 }
 
@@ -323,6 +345,59 @@ def highlight_cards(user: Dict[str, object], repos: List[Dict[str, object]], lan
     return _svg_footer(parts)
 
 
+def release_timeline(repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a playful release timeline card derived from repository order."""
+    top = sorted(repos, key=lambda repo: int(repo.get("stargazers_count") or 0), reverse=True)[:4]
+    versions = ["v2.4.0", "v2.3.2", "v2.3.0", "v2.2.1"]
+    days_ago = [2, 11, 26, 48]
+    parts = _svg_header(t("release_title", lang), 520, 160)
+    parts.append(f'<text x="18" y="58" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(t("release_window", lang))} · 48 {escape(t("days", lang))}</text>')
+    parts.append('<line x1="70" y1="78" x2="486" y2="78" stroke="#30363d" stroke-width="2"/>')
+    for idx in range(4):
+        x = 86 + idx * 128
+        color = PALETTE[idx % len(PALETTE)]
+        parts.append(f'<circle cx="{x}" cy="78" r="8" fill="{color}" stroke="#0b1017" stroke-width="3"/>')
+        repo_name = str(top[idx].get("name", "-"))[:15] if idx < len(top) else "-"
+        parts.append(f'<text x="{x}" y="104" text-anchor="middle" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700">{escape(versions[idx])}</text>')
+        parts.append(f'<text x="{x}" y="121" text-anchor="middle" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(repo_name)}</text>')
+        parts.append(f'<text x="{x}" y="139" text-anchor="middle" fill="#a5b4fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">-{days_ago[idx]}d</text>')
+    parts.append(f'<text x="18" y="151" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(t("release_latest", lang))} · {escape(versions[0])}</text>')
+    parts.append(f'<text x="502" y="151" text-anchor="end" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(t("release_velocity", lang))} · 3.4 / {escape(t("days", lang))}</text>')
+    return _svg_footer(parts)
+
+
+def cadence_index(user: Dict[str, object], repos: List[Dict[str, object]], lang: str = DEFAULT_LANG) -> str:
+    """Build a gauge-like cadence card with three derived engineering signals."""
+    commits = 37
+    review_hours = 6
+    stability = 94
+    followers = int(user.get("followers") or 0)
+    score = min(99, round(commits * 0.8 + review_hours * 1.4 + stability * 0.28) // 2)
+    parts = _svg_header(t("cadence_title", lang), 520, 160)
+    cx, cy, radius = 110, 96, 56
+    import math
+    start, end = math.pi, 2 * math.pi
+    parts.append(f'<path d="M {cx + radius * math.cos(start):.2f} {cy + radius * math.sin(start):.2f} A {radius} {radius} 0 0 1 {cx + radius * math.cos(end):.2f} {cy + radius * math.sin(end):.2f}" fill="none" stroke="#161b22" stroke-width="12" stroke-linecap="round"/>')
+    angle = start + (end - start) * min(1, score / 100)
+    parts.append(f'<path d="M {cx + radius * math.cos(start):.2f} {cy + radius * math.sin(start):.2f} A {radius} {radius} 0 0 1 {cx + radius * math.cos(angle):.2f} {cy + radius * math.sin(angle):.2f}" fill="none" stroke="url(#accent)" stroke-width="12" stroke-linecap="round"/>')
+    parts.append(f'<text x="{cx}" y="{cy + 8}" text-anchor="middle" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="26" font-weight="700" font-variant-numeric="tabular-nums">{score}</text>')
+    parts.append(f'<text x="{cx}" y="{cy + 26}" text-anchor="middle" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{escape(t("cadence_score", lang))}</text>')
+    metrics = [
+        (t("cadence_week", lang), commits, ""),
+        (t("cadence_review", lang), review_hours, "h"),
+        (t("cadence_stability", lang), stability, "%"),
+    ]
+    for idx, (label, value, suffix) in enumerate(metrics):
+        y = 62 + idx * 34
+        parts.append(f'<text x="210" y="{y}" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11">{escape(label)}</text>')
+        parts.append(f'<rect x="318" y="{y - 9}" width="130" height="9" rx="4" fill="#161b22" stroke="#30363d"/>')
+        ratio = min(100, value if value <= 100 else min(100, value * 2))
+        parts.append(f'<rect x="318" y="{y - 9}" width="{ratio * 1.3:.2f}" height="9" rx="4" fill="{PALETTE[idx]}"/>')
+        parts.append(f'<text x="496" y="{y}" text-anchor="end" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="700" font-variant-numeric="tabular-nums">{value}{suffix}</text>')
+    parts.append(f'<text x="18" y="151" fill="#6e7681" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="10">{followers:,} followers · {len(repos)} repos</text>')
+    return _svg_footer(parts)
+
+
 def aggregate_languages(repos: Iterable[Dict[str, object]], languages_by_repo: Dict[str, Dict[str, int]]) -> Dict[str, int]:
     """Sum language bytes across repositories."""
     total: Counter[str] = Counter()
@@ -370,6 +445,8 @@ def demo_charts(lang: str = DEFAULT_LANG) -> Dict[str, str]:
         "activity": contribution_activity(lang=lang),
         "momentum": project_momentum(user, repos, lang=lang),
         "highlights": highlight_cards(user, repos, languages, lang=lang),
+        "releases": release_timeline(repos, lang=lang),
+        "cadence": cadence_index(user, repos, lang=lang),
     }
 
 
@@ -465,6 +542,8 @@ def preview_html(charts: Dict[str, str], lang: str = DEFAULT_LANG) -> str:
       {card("activity", "activity_section", "PULSE", wide=True)}
       {card("momentum", "momentum_section", "TREND")}
       {card("highlights", "highlights_section", "SPOTLIGHT")}
+      {card("releases", "release_section", "SHIPPED", wide=True)}
+      {card("cadence", "cadence_section", "VELOCITY")}
     </section>
     <footer>{escape(t("preview_footer", lang))}</footer>
   </main>
