@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Dict
 
-from .charts import aggregate_languages, demo_charts, language_chart, profile_summary, repo_bars
+from .charts import aggregate_languages, demo_charts, language_chart, preview_html, profile_summary, repo_bars
 from .github_client import GitHubClient
 
 
@@ -20,6 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--token", default=os.environ.get("GITHUB_TOKEN"), help="GitHub token (or set GITHUB_TOKEN)")
     parser.add_argument("--metric", default="stargazers_count", help="Repo ranking metric (e.g. stargazers_count, forks_count)")
     parser.add_argument("--repo-languages", action="store_true", help="Aggregate languages across up to 20 repos")
+    parser.add_argument("--preview-html", action="store_true", help="Also write preview.html (works with --demo)")
     return parser
 
 
@@ -28,9 +29,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.demo:
         output = Path(args.output_dir)
         output.mkdir(parents=True, exist_ok=True)
-        for name, svg in demo_charts().items():
+        charts = demo_charts()
+        for name, svg in charts.items():
             (output / f"{name}.svg").write_text(svg, encoding="utf-8")
-        print(f"Wrote 3 demo charts to {output.resolve()}")
+        if args.preview_html:
+            (output / "preview.html").write_text(preview_html(charts), encoding="utf-8")
+            print(f"Wrote 3 demo charts and preview.html to {output.resolve()}")
+        else:
+            print(f"Wrote 3 demo charts to {output.resolve()}")
         return 0
 
     if not args.username:

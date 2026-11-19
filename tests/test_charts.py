@@ -1,4 +1,4 @@
-from createchart.charts import aggregate_languages, language_chart, profile_summary, repo_bars
+from createchart.charts import aggregate_languages, language_chart, preview_html, profile_summary, repo_bars
 
 
 def test_language_chart_empty():
@@ -43,3 +43,11 @@ def test_demo_charts_returns_three_svg_files():
     charts = demo_charts()
     assert set(charts) == {"profile", "repos", "languages"}
     assert all(svg.startswith("<svg") and svg.endswith("</svg>") for svg in charts.values())
+
+
+def test_preview_html_wraps_all_charts():
+    html = preview_html({"profile": "<svg>p</svg>", "repos": "<svg>r</svg>", "languages": "<svg>l</svg>"})
+    assert "<html" in html
+    assert "<svg>p</svg>" in html
+    assert "<svg>r</svg>" in html
+    assert "<svg>l</svg>" in html

@@ -43,11 +43,13 @@ createchart octocat --repo-languages
 
 ## Preview
 
-Run the offline demo to generate three sample charts:
+Run the offline demo to generate three sample charts and a standalone preview page:
 
 ```bash
-createchart --demo -o charts
+createchart --demo --preview-html -o charts
 ```
+
+Open `charts/preview.html` locally, or use this screenshot:
 
 ![CreateChart preview](createchart-preview.png)
 
