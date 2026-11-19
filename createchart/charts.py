@@ -164,21 +164,6 @@ def demo_data() -> Tuple[Dict[str, object], List[Dict[str, object]], Dict[str, i
 def demo_charts() -> Dict[str, str]:
     """Build sample charts for local preview without network access."""
     user, repos, languages = demo_data()
-    user = {
-        "login": "octocat",
-        "name": "The Octocat",
-        "followers": 12840,
-        "following": 92,
-        "public_repos": 42,
-    }
-    repos = [
-        {"name": "hello-world", "stargazers_count": 5820},
-        {"name": "linguist", "stargazers_count": 4310},
-        {"name": "hub", "stargazers_count": 3140},
-        {"name": "gitignore", "stargazers_count": 2680},
-        {"name": "git-consortium", "stargazers_count": 1490},
-    ]
-    languages = {"Python": 182000, "TypeScript": 96500, "Go": 54300, "Rust": 32100, "Shell": 12400}
     return {
         "profile": profile_summary(user, repos),
         "repos": repo_bars(repos),
@@ -199,34 +184,73 @@ def preview_html(charts: Dict[str, str]) -> str:
     * {{ box-sizing: border-box; }}
     body {{
       margin: 0;
-      padding: 32px 24px 48px;
-      background: radial-gradient(circle at 15% 0%, #1f2937 0, #0b0f16 45%, #07090d 100%);
+      min-height: 100vh;
+      padding: 36px 24px 56px;
+      background:
+        radial-gradient(circle at 12% 4%, rgba(99, 102, 241, .32) 0, transparent 28%),
+        radial-gradient(circle at 88% 8%, rgba(6, 182, 212, .2) 0, transparent 26%),
+        radial-gradient(circle at 15% 0%, #1f2937 0, #0b0f16 48%, #07090d 100%);
       color: #e6edf3;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }}
     main {{ max-width: 1180px; margin: 0 auto; }}
-    header {{ margin-bottom: 24px; }}
-    h1 {{ margin: 0 0 8px; font-size: 28px; letter-spacing: .2px; }}
-    .subtitle {{ color: #8b949e; font-size: 14px; }}
+    header {{
+      margin-bottom: 28px;
+      padding: 2px 4px 22px;
+      border-bottom: 1px solid #30363d;
+    }}
+    .eyebrow {{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border: 1px solid rgba(99, 102, 241, .45);
+      border-radius: 999px;
+      background: rgba(99, 102, 241, .12);
+      color: #a5b4fc;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }}
+    .eyebrow::before {{ content: ""; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 4px rgba(52, 211, 153, .12); }}
+    h1 {{ margin: 0 0 8px; font-size: 34px; line-height: 1.12; letter-spacing: -.02em; }}
+    .subtitle {{ color: #8b949e; font-size: 14px; line-height: 1.6; }}
     .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }}
     .card {{
-      padding: 18px;
+      position: relative;
+      padding: 20px;
       border: 1px solid #30363d;
-      border-radius: 14px;
-      background: rgba(13, 17, 23, .82);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, .28);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(22, 27, 34, .95), rgba(13, 17, 23, .88));
+      box-shadow: 0 20px 45px rgba(0, 0, 0, .3);
+      overflow: hidden;
+    }}
+    .card::before {{
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 2px;
+      background: linear-gradient(90deg, #6366f1, #06b6d4, #10b981);
     }}
     .card:first-child {{ grid-column: 1 / -1; }}
     .card svg {{ display: block; width: 100%; height: auto; }}
-    footer {{ margin-top: 20px; color: #6e7681; font-size: 12px; }}
-    @media (max-width: 900px) {{ .grid {{ grid-template-columns: 1fr; }} .card:first-child {{ grid-column: auto; }} }}
+    footer {{ margin-top: 22px; color: #6e7681; font-size: 12px; }}
+    @media (max-width: 900px) {{
+      body {{ padding: 24px 16px 40px; }}
+      h1 {{ font-size: 28px; }}
+      .grid {{ grid-template-columns: 1fr; }}
+      .card:first-child {{ grid-column: auto; }}
+    }}
   </style>
 </head>
 <body>
   <main>
     <header>
+      <div class="eyebrow">Live SVG charts</div>
       <h1>CreateChart preview</h1>
-      <div class="subtitle">GitHub profile statistics · offline demo</div>
+      <div class="subtitle">GitHub profile statistics · offline demo · responsive cards with a new accent treatment</div>
     </header>
     <section class="grid">
       <div class="card">{charts["profile"]}</div>
