@@ -8,6 +8,7 @@ Generate SVG statistical charts for GitHub profiles and repositories. Ready to d
 - Top repositories bar chart by stars/forks/any numeric repo field
 - Language distribution stacked bar chart
 - Pure SVG output — no JavaScript, works in any GitHub README
+- Polished cards with contrast labels, rank badges, legend percentages, and value emphasis
 - Offline demo mode for previewing charts without GitHub API calls
 
 ## Install

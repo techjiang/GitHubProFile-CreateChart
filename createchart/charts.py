@@ -7,8 +7,8 @@ from html import escape
 from typing import Dict, Iterable, List, Tuple
 
 PALETTE = [
-    "#4f46e5", "#06b6d4", "#10b981", "#f59e0b",
-    "#ef4444", "#8b5cf6", "#ec4899", "#64748b",
+    "#6366f1", "#22d3ee", "#34d399", "#fbbf24",
+    "#fb7185", "#a78bfa", "#f472b6", "#94a3b8",
 ]
 
 
@@ -28,7 +28,8 @@ def _svg_header(title: str, width: int, height: int) -> List[str]:
         f'<rect width="{width}" height="{height}" fill="url(#bg)" rx="12"/>',
         f'<rect x="0" y="0" width="4" height="{height}" fill="url(#accent)" rx="2"/>',
         f'<rect x="0" y="0" width="{width}" height="1" fill="#ffffff" opacity="0.06"/>',
-        f'<text x="16" y="28" fill="#e6edf3" font-family="sans-serif" font-size="16" font-weight="700">{escape(title)}</text>',
+        f'<text x="16" y="28" fill="#e6edf3" font-family="sans-serif" font-size="15" font-weight="700" letter-spacing="0.2">{escape(title)}</text>',
+        f'<line x1="16" y1="36" x2="{width - 16}" y2="36" stroke="#ffffff" stroke-opacity="0.08"/>',
     ]
 
 
@@ -47,6 +48,9 @@ def language_chart(languages: Dict[str, int], title: str = "Languages") -> str:
 
     x = 16.0
     bar_width = 488.0
+    for tick in (0, 0.5, 1.0):
+        tick_x = 16.0 + tick * bar_width
+        parts.append(f'<line x1="{tick_x:.2f}" y1="42" x2="{tick_x:.2f}" y2="64" stroke="#ffffff" stroke-opacity="0.07"/>')
     for idx, (lang, value) in enumerate(sorted(languages.items(), key=lambda kv: -kv[1])):
         if value <= 0:
             continue
@@ -64,7 +68,7 @@ def language_chart(languages: Dict[str, int], title: str = "Languages") -> str:
         pct = 100 * value / total
         label = f"{lang} {pct:.1f}%"
         parts.append(f'<rect x="{legend_x:.2f}" y="{legend_y - 10}" width="10" height="10" rx="2" fill="{color}"/>')
-        parts.append(f'<text x="{legend_x + 16:.2f}" y="{legend_y}" fill="#c9d1d9" font-family="sans-serif" font-size="12">{escape(label)}</text>')
+        parts.append(f'<text x="{legend_x + 16:.2f}" y="{legend_y}" fill="#e6edf3" font-family="sans-serif" font-size="12"><tspan fill="#a5b4fc" font-weight="700">{pct:.1f}%</tspan> {escape(lang)}</text>')
         legend_x += 20 + len(label) * 7
     return _svg_footer(parts)
 
@@ -94,9 +98,12 @@ def repo_bars(repos: Iterable[Dict[str, object]], metric: str = "stargazers_coun
     for idx, (name, value) in enumerate(ranked):
         y = 48 + idx * row_height
         bar = bar_max * value / max_value
-        parts.append(f'<text x="16" y="{y + 14}" fill="#c9d1d9" font-family="sans-serif" font-size="12">{escape(name)}</text>')
+        rank_color = PALETTE[idx % len(PALETTE)]
+        parts.append(f'<circle cx="28" cy="{y + 8}" r="9" fill="{rank_color}" fill-opacity="0.18" stroke="{rank_color}" stroke-opacity="0.5"/>')
+        parts.append(f'<text x="28" y="{y + 12}" text-anchor="middle" fill="#e6edf3" font-family="sans-serif" font-size="10" font-weight="700">{idx + 1}</text>')
+        parts.append(f'<text x="44" y="{y + 14}" fill="#c9d1d9" font-family="sans-serif" font-size="12">{escape(name)}</text>')
         parts.append(f'<rect x="180" y="{y}" width="{bar:.2f}" height="16" rx="3" fill="url(#accent)"><title>{escape(name)}: {value}</title></rect>')
-        parts.append(f'<text x="{190 + bar:.2f}" y="{y + 14}" fill="#8b949e" font-family="sans-serif" font-size="11">{value}</text>')
+        parts.append(f'<text x="{190 + bar:.2f}" y="{y + 14}" fill="#8b949e" font-family="sans-serif" font-size="11" font-weight="700" font-feature-settings="tnum">{value:,}</text>')
     return _svg_footer(parts)
 
 
@@ -124,7 +131,7 @@ def profile_summary(user: Dict[str, object], repos: Iterable[Dict[str, object]])
     for idx, (label, value) in enumerate(stats):
         x = 16 + (idx % 2) * 252
         y = 62 + (idx // 2) * 52
-        lines.append(f'<text x="{x}" y="{y}" fill="#8b949e" font-family="sans-serif" font-size="11" letter-spacing="0.5">{escape(label).upper()}</text>')
+        lines.append(f'<text x="{x}" y="{y}" fill="#a5b4fc" font-family="sans-serif" font-size="11" font-weight="700" letter-spacing="1">{escape(label).upper()}</text>')
         lines.append(f'<rect x="{x}" y="{y + 8}" width="220" height="34" rx="7" fill="#161b22" stroke="#30363d"/>')
         lines.append(f'<text x="{x + 12}" y="{y + 31}" fill="#e6edf3" font-family="sans-serif" font-size="24" font-weight="700" font-feature-settings="tnum">{value}</text>')
     return _svg_footer(lines)
@@ -246,14 +253,14 @@ def preview_html(charts: Dict[str, str]) -> str:
     <header>
       <div class="eyebrow">Live SVG charts</div>
       <h1>CreateChart preview</h1>
-      <div class="subtitle">GitHub profile statistics · offline demo · five rounds of visual polish</div>
+      <div class="subtitle">GitHub profile statistics · offline demo · five more rounds of visual polish</div>
     </header>
     <section class="grid">
       <div class="card"><span class="section-label">01 / Profile</span>{charts["profile"]}</div>
       <div class="card"><span class="section-label">02 / Repositories</span>{charts["repos"]}</div>
       <div class="card"><span class="section-label">03 / Languages</span>{charts["languages"]}</div>
     </section>
-    <footer>Generated locally by CreateChart. SVG charts are ready for GitHub Profile README.</footer>
+    <footer>Generated locally by CreateChart · pure SVG · ready for GitHub Profile README.</footer>
   </main>
 </body>
 </html>
